@@ -10,6 +10,7 @@ class bilibili_spider(spider):
         self.aim = [5998]
 
     def url(self):
+        'return the url that spider need.'
         return [self._url(i) for i in self.aim]
 
     def _url(self, Bangumino):
@@ -19,6 +20,7 @@ class bilibili_spider(spider):
         return url
 
     def handle(self, text):
+        'the fun to handle the text spider return'
         for item in text:
             dica = json.loads(re.findall('\w*\((.*)\);', item)[0])
             eps = dica['result']['episodes']

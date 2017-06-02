@@ -14,9 +14,8 @@ class bilibili_spider(spider):
         return [self._url(i) for i in self.aim]
 
     def _url(self, Bangumino):
-        url = 'http://bangumi.bilibili.com/jsonp/seasoninfo/'
-        url += str(Bangumino)
-        url += '.ver?callback=seasonListCallback'
+        url = f'http://bangumi.bilibili.com/jsonp/seasoninfo/%s\
+.ver?callback=seasonListCallback' % str(Bangumino)
         return url
 
     def handle(self, text):

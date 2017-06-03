@@ -33,7 +33,7 @@ class bilibili_spider(spider):
             eps[0]['index'],
             eps[0]['index_title'],
             eps[0]['webplay_url'])
-        fres = "%s 更新了第%s集 %s\n%s" % res
+        fres = "%s 更新了第%s集 %s\n%s" % res  # format string
         if self.tmpfile != res:
             self.tmpfile = res
             return fres

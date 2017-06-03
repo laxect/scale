@@ -1,3 +1,4 @@
+import gevent
 from telegram.ext import Updater, CommandHandler
 
 
@@ -12,9 +13,16 @@ class scales_telegram_bot:
     def start(self, bot, update):
         update.message.reply_text('Hello World!')
 
-    def run(self, queue):
+    def _run(self, queue):
         item = queue.get()
         self.updater.bot.send_message(self.chat_id, str(item))
+
+    def run(self, queue):
+        pool = [
+            gevent.spawn(self._run, queue),
+            gevent.spawn(self.updater.start_polling)
+        ]
+        gevent.joinall(pool)
 
 
 def mod_init(arg=None):

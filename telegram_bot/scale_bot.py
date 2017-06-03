@@ -1,6 +1,5 @@
 import gevent
 from gevent import monkey
-from configparser import ConfigParser
 from telegram.ext import Updater, CommandHandler
 monkey.patch_socket()
 
@@ -23,10 +22,9 @@ def show():
 
 
 def main():
-    config = ConfigParser()
-    config.read('telegram_bot_config.ini')
+    import config
     gevent.joinall([
-        gevent.spawn(init, config['user']['token'], config['user']['chat_id']),
+        gevent.spawn(init, config.token, config.chat_id),
         gevent.spawn(show)
     ])
 

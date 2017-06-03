@@ -1,8 +1,3 @@
-class config:
-    class spider:
-        spiders = {
-        }
-
-    class output:
-        outputs = {
-        }
+# you should add you session here
+sessions = {
+}

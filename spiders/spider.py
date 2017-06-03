@@ -7,14 +7,16 @@ class spider:
         pass
 
     def url(self):
-        return []
+        pass
 
     def handle(self, text):
-        return []
+        pass
 
-    def run(self):
-        text = [requests.get(url).text for url in self.url()]
-        return self.handle(text)
+    def run(self, queue):
+        text = requests.get(self.url()).text
+        res = self.handle(text)
+        if res:
+            queue.put(res)
 
 
 def main():

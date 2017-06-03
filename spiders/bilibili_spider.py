@@ -6,12 +6,14 @@ from spider import spider
 
 class bilibili_spider(spider):
     'a spider espeacially design for bilibili bangumi'
-    def __init__(self):
-        self.aim = [5998]
+    def __init__(self, aim=5998):
+        'aim in stand of which bangumi you want to watch'
+        self.aim = aim
+        self.tmpfile = ''
 
     def url(self):
         'return the url that spider need.'
-        return [self._url(i) for i in self.aim]
+        return self._url(self.aim)
 
     def _url(self, Bangumino):
         url = 'http://bangumi.bilibili.com/jsonp/seasoninfo/%s\
@@ -20,13 +22,14 @@ class bilibili_spider(spider):
 
     def handle(self, text):
         'the fun to handle the text spider return'
-        for item in text:
-            dica = json.loads(re.findall('\w*\((.*)\);', item)[0])
-            eps = dica['result']['episodes']
-            res = (
-                eps[0]['index'],
-                eps[0]['index_title'],
-                eps[0]['webplay_url'])
+        dica = json.loads(re.findall('\w*\((.*)\);', text)[0])
+        eps = dica['result']['episodes']
+        res = (
+            eps[0]['index'],
+            eps[0]['index_title'],
+            eps[0]['webplay_url'])
+        if self.tmpfile != res:
+            self.tmpfile = res
             return res
 
 
@@ -35,4 +38,8 @@ def mod_init():
 
 
 if __name__ == '__main__':
-    mod_init().run()
+    class test_queue:
+        def put(self,obj):
+            print(obj)
+
+    mod_init().run(test_queue())

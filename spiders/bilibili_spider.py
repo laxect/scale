@@ -39,7 +39,7 @@ def mod_init():
 
 if __name__ == '__main__':
     class test_queue:
-        def put(self,obj):
+        def put(self, obj):
             print(obj)
 
     mod_init().run(test_queue())

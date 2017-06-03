@@ -1,7 +1,10 @@
 import re
 import json
 # my module
-from spider import spider
+try:
+    from spider import spider
+except ModuleNotFoundError:
+    from spiders.spider import spider
 
 
 class bilibili_spider(spider):

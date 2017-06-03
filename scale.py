@@ -1,5 +1,5 @@
 import gevent
-from gevent import monkey
+from gevent import monkey, queue
 from importlib import import_module
 
 # my module
@@ -9,26 +9,28 @@ from session import Session
 try:
     import config
 except ModuleNotFoundError:
-    import defualt_config as config
+    import default_config as config
 monkey.patch_socket()
 
 
 class Scale_console:
     def __init__(self):
         self.sessions = []
-        self.queue = gevent.queue.Queue()
-        self.config = config.config
-        for mod_name, interval in config.sessions:
+        self.queue = queue.Queue()
+        for mod_name in config.sessions:
+            interval = config.sessions[mod_name]
             try:
                 mod = import_module(mod_name)
             except ModuleNotFoundError as err:
                 print('Error when inital: %s' % err)
                 exit(1)
             self.sessions.append(Session(mod.mod_init(), interval, self.queue))
+        print('scale inital complete.')
 
     def run(self):
-        for task in self.sessions:
-            gevent.spawn(task.run())
+        'run task'
+        pool = [gevent.spawn(task.run) for task in self.sessions]
+        gevent.joinall(pool)
 
 
 if __name__ == '__main__':

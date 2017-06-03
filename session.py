@@ -3,9 +3,9 @@ import gevent
 
 class Session:
     'the standard session for all type of task'
-    def __init__(self, obj, interval, queue):
+    def __init__(self, obj, interval, que):
         self.obj = obj
-        self.queue = queue
+        self.queue = que
         self.interval = interval
 
     def run(self):

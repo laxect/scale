@@ -91,3 +91,6 @@ ENV/
 # my setting
 config.py
 tmp/
+
+# test file
+test*

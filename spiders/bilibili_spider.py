@@ -36,8 +36,8 @@ class bilibili_spider(spider):
             return res
 
 
-def mod_init():
-    return bilibili_spider()
+def mod_init(aim=5998):
+    return bilibili_spider(aim=aim)
 
 
 if __name__ == '__main__':

@@ -1,33 +1,35 @@
-import gevent
-from gevent import monkey
 from telegram.ext import Updater, CommandHandler
-monkey.patch_socket()
 
 
-def start(bot, update):
-    update.message.reply_text('Hello World!')
+class scales_telegram_bot:
+    def __init__(self, token, chat_id=None):
+        self.updater = Updater(token)
+        self.chat_id = chat_id
+        self.updater.dispatcher.add_handler(
+            CommandHandler('start', self.start)
+        )
+
+    def start(self, bot, update):
+        update.message.reply_text('Hello World!')
+
+    def run(self, queue):
+        item = queue.get()
+        self.updater.bot.send_message(self.chat_id, str(item))
 
 
-def init(token, chat_id):
-    updater = Updater(token)
-    updater.dispatcher.add_handler(CommandHandler('start', start))
-    updater.bot.send_message(chat_id=chat_id, text='hello world')
-    updater.start_polling()
-
-
-def show():
-    while True:
-        gevent.sleep(1)
-        print('runing!')
-
-
-def main():
-    import config
-    gevent.joinall([
-        gevent.spawn(init, config.token, config.chat_id),
-        gevent.spawn(show)
-    ])
+def mod_init(arg=None):
+    try:
+        import config
+    except ModuleNotFoundError:
+        import default_config as config
+    return scales_telegram_bot(config.token, config.chat_id)
 
 
 if __name__ == '__main__':
-    main()
+    from gevent import monkey
+    monkey.patch_socket()
+    from gevent.queue import Queue
+    Q = Queue()
+    Q.put('hello world')
+    bot = mod_init()
+    bot.run(Q)

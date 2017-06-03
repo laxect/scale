@@ -26,14 +26,17 @@ class bilibili_spider(spider):
     def handle(self, text):
         'the fun to handle the text spider return'
         dica = json.loads(re.findall('\w*\((.*)\);', text)[0])
+        title = dica['result']['bangumi_title']
         eps = dica['result']['episodes']
         res = (
+            title,
             eps[0]['index'],
             eps[0]['index_title'],
             eps[0]['webplay_url'])
+        fres = "%s 更新了第%s集 %s\n%s" % res
         if self.tmpfile != res:
             self.tmpfile = res
-            return res
+            return fres
 
 
 def mod_init(aim=5998):

@@ -10,7 +10,7 @@ try:
     import config
 except ModuleNotFoundError:
     import default_config as config
-monkey.patch_socket()
+monkey.patch_all()
 
 
 class Scale_console:

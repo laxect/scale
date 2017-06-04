@@ -94,3 +94,6 @@ tmp/
 
 # test file
 test*
+
+# Google app Engine
+app.yaml

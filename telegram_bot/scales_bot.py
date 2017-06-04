@@ -28,7 +28,7 @@ class scales_telegram_bot:
 def mod_init(arg=None):
     try:
         import config
-    except ModuleNotFoundError:
+    except ImportError:
         import default_config as config
     return scales_telegram_bot(config.token, config.chat_id)
 

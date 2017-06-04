@@ -3,7 +3,7 @@ import json
 # my module
 try:
     from spider import spider
-except ModuleNotFoundError:
+except ImportError:
     from spiders.spider import spider
 
 

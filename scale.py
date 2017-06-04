@@ -8,7 +8,7 @@ from session import Session
 # import config
 try:
     import config
-except ModuleNotFoundError:
+except ImportError:
     import default_config as config
 monkey.patch_all()
 
@@ -21,7 +21,7 @@ class Scale_console:
             interval = config.sessions[mod_name]
             try:
                 mod = import_module(mod_name)
-            except ModuleNotFoundError as err:
+            except ImportError as err:
                 print('Error when inital: %s' % err)
                 exit(1)
             self.sessions.append(Session(mod.mod_init(), interval, self.queue))

@@ -96,4 +96,3 @@ tmp/
 test*
 
 # Google app Engine
-app.yaml

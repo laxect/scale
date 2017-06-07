@@ -1,26 +1,18 @@
 import re
 import json
+import requests
 # my module
-try:
-    from spider import spider
-except ImportError:
-    from spiders.spider import spider
 
 
-class bilibili_spider(spider):
+class bilibili_spider():
     'a spider espeacially design for bilibili bangumi'
-    def __init__(self, aim=5998):
+    def __init__(self, aim):
         'aim in stand of which bangumi you want to watch'
         self.aim = aim
-        self.tmpfile = ''
 
     def url(self):
-        'return the url that spider need.'
-        return self._url(self.aim)
-
-    def _url(self, Bangumino):
-        url = 'http://bangumi.bilibili.com/jsonp/seasoninfo/%s\
-.ver?callback=seasonListCallback' % str(Bangumino)
+        url = f'http://bangumi.bilibili.com/jsonp/seasoninfo/{self.aim}\
+.ver?callback=seasonListCallback'
         return url
 
     def handle(self, text):
@@ -34,12 +26,14 @@ class bilibili_spider(spider):
             eps[0]['index_title'],
             eps[0]['webplay_url'])
         fres = "%s 更新了第%s集 %s\n%s" % res  # format string
-        if self.tmpfile != res:
-            self.tmpfile = res
-            return fres
+        return (fres, res[1], 'bilibili_spider.'+str(self.aim))
+
+    def run(self, que):
+        res = self.handle(requests.get(self.url()).text)
+        que.put(res[0])
 
 
-def mod_init(aim=5998):
+def mod_init(aim):
     return bilibili_spider(aim=aim)
 
 
@@ -48,4 +42,4 @@ if __name__ == '__main__':
         def put(self, obj):
             print(obj)
 
-    mod_init().run(test_queue())
+    print(mod_init().run(test_queue()))

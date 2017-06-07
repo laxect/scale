@@ -1,13 +1,9 @@
 # scale
 
-a lightly python task program.
+a lightly python task program.you can easily use this program to do some timer work.
 
-you can easily use this program to do some timer work.
-
-## dependences
+## dependence
 
 ```
- pip install gevent
- pip install requests
- pip install telegram-python-bot
+pip install -r requirements.txt
 ```

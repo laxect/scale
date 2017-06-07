@@ -1,9 +1,0 @@
-runtime: python
-env: flex
-
-runtime_config:
-    python_version: 3.6
-
-service: scale-01
-
-skip_files: ^(.*/)?\.bak$

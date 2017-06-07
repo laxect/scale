@@ -27,7 +27,6 @@ class bilibili_spider:
         try:
             tmp = open(sys.path[0]+'/bilibili_spider_store', 'r+')
         except FileNotFoundError as err:
-            print('Error : {err}')
             tmp = open(sys.path[0]+'/bilibili_spider_store', 'w+')
         # read from file. and if the file is not exist, touch it
         try:
@@ -66,7 +65,7 @@ class bilibili_spider:
         for aim in self.aim:
             res = self.handle(requests.get(self.url(aim)).text, aim)
             if res:
-                text.appen(text)
+                text.append(res)
         return text
 
 
@@ -75,7 +74,10 @@ def mod_init():
 
 
 if __name__ == '__main__':
+    from scales_bot import A_test_from_bot
     bs = mod_init()
     text = bs.run()
-    for item in text:
-        print(item)
+    if text:
+        for item in text:
+            print(item)
+            A_test_from_bot(item)

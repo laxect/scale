@@ -1,7 +1,16 @@
 # telegram bot python edition
-# will update name to scale in next edition (1.0.0-alpha)
+import sys
+import json
 import gevent
 from telegram.ext import Updater, CommandHandler
+
+
+def A_test_from_bot(msg):
+    with open(sys.path[0]+'/scales_bot_config', 'r') as tmp:
+        config = json.loads(tmp.read())
+        token, chat_id = config
+    updater = Updater(token)
+    updater.bot.send_message(chat_id, str(msg))
 
 
 class scales_telegram_bot:

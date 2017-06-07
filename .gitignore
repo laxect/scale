@@ -92,6 +92,7 @@ ENV/
 tmp/
 config.py
 *_config
+*_store
 
 # test file
 test*

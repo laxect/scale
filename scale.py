@@ -20,7 +20,7 @@ class Scale_console:
         for mod_name in config.sessions:
             interval = config.sessions[mod_name]
             try:
-                mod = import_module(mod_name)
+                mod = import_module('modules.'+mod_name)
             except ImportError as err:
                 print('Error when inital: %s' % err)
                 exit(1)
@@ -35,4 +35,7 @@ class Scale_console:
 
 if __name__ == '__main__':
     scale_console = Scale_console()
-    scale_console.run()
+    try:
+        scale_console.run()
+    except KeyboardInterrupt as err:
+        print('good bye.')

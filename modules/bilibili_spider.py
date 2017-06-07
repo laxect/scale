@@ -4,7 +4,7 @@ import json
 try:
     from spider import spider
 except ImportError:
-    from spiders.spider import spider
+    from modules.spider import spider
 
 
 class bilibili_spider(spider):

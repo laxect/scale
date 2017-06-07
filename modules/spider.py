@@ -12,11 +12,12 @@ class spider:
     def handle(self, text):
         pass
 
-    def run(self, queue):
-        text = requests.get(self.url()).text
+    def run(self):
+        text = []
+        for url in self.url():
+            text.append(requests.get(url).text)
         res = self.handle(text)
-        if res:
-            queue.put(res)
+        return res
 
 
 def main():

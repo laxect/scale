@@ -1,11 +1,11 @@
 # scale
 
-a lightly python task program.
+a lightly python task program, design for Google App Engine.
 
-you can easily use this program to do some timer work.
-
-## dependences
+## dependence
 
 ```
 pip -r requirements.txt
 ```
+
+requirements update in 1.0.0-alpha

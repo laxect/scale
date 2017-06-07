@@ -89,8 +89,9 @@ ENV/
 .ropeproject
 
 # my setting
-config.py
 tmp/
+config.py
+*_config
 
 # test file
 test*

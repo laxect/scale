@@ -1,4 +1,5 @@
 # telegram bot python edition
+# will update name to scale in next edition (1.0.0-alpha)
 import gevent
 from telegram.ext import Updater, CommandHandler
 

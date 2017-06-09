@@ -2,11 +2,7 @@ import re
 import json
 import requests
 # my module
-try:
-    import modules.store_file as store_file
-except ModuleNotFoundError:
-    import store_file
-
+from . import store_file
 
 class bilibili_spider():
     'a spider espeacially design for bilibili bangumi'

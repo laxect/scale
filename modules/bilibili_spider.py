@@ -2,36 +2,10 @@ import re
 import json
 import requests
 # my module
-
-
-class tmpfile():
-    'the class that save data'
-    # will be mov to div file in the next releases.
-    def __init__(self, id):
-        import sys
-        self.path = sys.path[0]+f'/{id}.tmp'
-        print(self.path)
-
-    def __enter__(self):
-        # special design for with
-        try:
-            with open(self.path, 'r') as tmp_file:
-                self.dict = json.loads(tmp_file.read())
-        except FileNotFoundError:
-            self.dict = {}
-        return self
-
-    def check_up_to_date(self, key, text):
-        if self.dict.get(key) == text:
-            return False
-        else:
-            self.dict[key] = text
-            return True
-
-    def __exit__(self, exc_ty, exc_val, tb):
-        with open(self.path, 'w+') as tmp_file:
-            tmp_file.write(json.dumps(self.dict))
-        del self.dict
+try:
+    import modules.store_file as store_file
+except ModuleNotFoundError:
+    import store_file
 
 
 class bilibili_spider():
@@ -57,8 +31,8 @@ class bilibili_spider():
             eps[0]['index_title'],
             eps[0]['webplay_url'])
         fres = "%s 更新了第%s集 %s\n%s" % res  # format string
-        with tmpfile(self.id) as hash_map:
-            if hash_map.check_up_to_date(self.id, str(res[1])):
+        with store_file.data_file(self.id) as hash_map:
+            if hash_map.check_up_to_date(str(res)):
                 return (fres, self.id)
         return None
 

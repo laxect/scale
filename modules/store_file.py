@@ -8,6 +8,7 @@ import hashlib
 
 class data_file():
     'the class that save data, use a hash dict to store nearly all thing'
+    # laxect.data_file.1.0.0
     def __init__(self, sid):
         import sys
         self.path = sys.path[0]+'/laxect.data_file.1.0.0.tmp'

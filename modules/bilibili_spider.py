@@ -10,6 +10,7 @@ except ModuleNotFoundError:
 
 class bilibili_spider():
     'a spider espeacially design for bilibili bangumi'
+    # laxect.bilibili_spider.1.0.0
     def __init__(self, aim):
         'aim in stand of which bangumi you want to watch'
         self._aim = aim

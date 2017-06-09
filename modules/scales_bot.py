@@ -13,6 +13,7 @@ class scales_telegram_bot:
     def start(self, bot, update):
         update.message.reply_text('Hello World!')
         print(update.message.chat_id)
+        # design for test.
 
     def _run(self, queue):
         item = queue.get()

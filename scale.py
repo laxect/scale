@@ -10,7 +10,7 @@ try:
     import config
 except ImportError:
     import default_config as config
-monkey.patch_all()
+monkey.patch_all(aggressive=True)
 
 
 class Scale_console:

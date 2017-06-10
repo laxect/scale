@@ -1,5 +1,6 @@
 import re
 import json
+import gevent
 import requests
 # my module
 from . import store_file
@@ -7,7 +8,7 @@ from . import store_file
 
 class bilibili_spider():
     'a spider espeacially design for bilibili bangumi'
-    # laxect.bilibili_spider.2.0.0
+    # laxect.bilibili_spider.2.1.0
     def __init__(self, aim):
         'aim in stand of which bangumi you want to watch'
         self._aims = aim
@@ -43,8 +44,10 @@ class bilibili_spider():
             que.put(res[0])
 
     def run(self, que):
+        pool = []
         for aim in self._aims:
-            self._run(que, aim)
+            pool.append(gevent.spawn(self._run, que, aim))
+        gevent.joinall(pool)
 
 
 def mod_init(aim):

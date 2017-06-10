@@ -29,12 +29,9 @@ class scales_telegram_bot:
         gevent.joinall(pool)
 
 
-def mod_init(arg=None):
-    try:
-        import config
-    except ImportError:
-        import default_config as config
-    return scales_telegram_bot(config.token, config.chat_id)
+def mod_init(argv):
+    token, chat_id = argv
+    return scales_telegram_bot(token, chat_id)
 
 
 if __name__ == '__main__':

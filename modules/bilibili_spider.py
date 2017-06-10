@@ -7,18 +7,21 @@ from . import store_file
 
 class bilibili_spider():
     'a spider espeacially design for bilibili bangumi'
-    # laxect.bilibili_spider.1.0.0
+    # laxect.bilibili_spider.2.0.0
     def __init__(self, aim):
         'aim in stand of which bangumi you want to watch'
-        self._aim = aim
-        self.id = f'laxect.bilibili_spider.{aim}'
+        self._aims = aim
+        self.id = 'laxect.bilibili_spider'
 
-    def _url(self):
-        url = f'http://bangumi.bilibili.com/jsonp/seasoninfo/{self._aim}\
+    def _id(self, aim):
+        return f'laxect.bilibili_spider.{aim}'
+
+    def _url(self, aim):
+        url = f'http://bangumi.bilibili.com/jsonp/seasoninfo/{aim}\
 .ver?callback=seasonListCallback'
         return url
 
-    def _handle(self, text):
+    def _handle(self, text, aim):
         'the fun to handle the text spider return'
         dica = json.loads(re.findall('\w*\((.*)\);', text)[0])
         title = dica['result']['bangumi_title']
@@ -29,15 +32,19 @@ class bilibili_spider():
             eps[0]['index_title'],
             eps[0]['webplay_url'])
         fres = "%s 更新了第%s集 %s\n%s" % res  # format string
-        with store_file.data_file(self.id) as hash_map:
+        with store_file.data_file(self._id(aim)) as hash_map:
             if hash_map.check_up_to_date(str(res)):
-                return (fres, self.id)
+                return (fres, self._id(aim))
         return None
 
-    def run(self, que):
-        res = self._handle(requests.get(self._url()).text)
+    def _run(self, que, aim):
+        res = self._handle(requests.get(self._url(aim)).text, aim)
         if res:
             que.put(res[0])
+
+    def run(self, que):
+        for aim in self._aims:
+            self._run(que, aim)
 
 
 def mod_init(aim):

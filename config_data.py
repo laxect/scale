@@ -16,9 +16,9 @@ class config_data():
         db = sqlite3.connect(self.path)
         cur = db.cursor()
         try:
-            cur.execute(f'select * from config')
+            cur.execute(f'select * from {self._id}')
         except sqlite3.OperationalError:
-            self._init_check()
+            self._init_table()
         db.close()
 
     def _init_table(self):
@@ -27,7 +27,18 @@ class config_data():
             cur.execute(f'create table {self._id} (key text, value text)')
 
     def loads(self):
-        db = sqlite3.connect(self.path)
-        cur = db.cursor()
-        cur.execute('select * from config')
-        self.sessions = cur.fetchall()
+        with sqlite3.connect(self.path) as db:
+            cur = db.cursor()
+            cur.execute(f'select * from {self._id}')
+            sessions = cur.fetchall()
+        for key, values in sessions:
+            exec(f'self.sessions[key] = {values}')
+
+
+def main():
+    test = config_data()
+    print(test.loads())
+
+
+if __name__ == '__main__':
+    main()

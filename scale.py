@@ -18,8 +18,7 @@ class Scale_console:
         self.sessions = []
         self.queue = queue.Queue()
         for mod_name in config.sessions:
-            inte = config.sessions[mod_name][0]
-            argv = config.sessions[mod_name][1]
+            inte, argv, *_ = config.sessions[mod_name]
             try:
                 mod_name = mod_name.split('.')[0]
                 mod = import_module('modules.'+mod_name)

@@ -5,7 +5,7 @@ import hashlib
 
 
 class data_base():
-    # laxect.data_base.1.0.0
+    # laxect.data_base.1.0.1
     def __init__(self, sid):
         self.sid = sid.replace('.', '_')
         self.status = False
@@ -30,10 +30,10 @@ class data_base():
         except sqlite3.OperationalError:
             self._table_build_up()
         res = cur.fetchall()
-        if res:
-            return False
         self.hash.update(str(content).encode('utf-8'))
         _hash = self.hash.hexdigest()
+        if res and res[0][0] == _hash:
+            return False
         cur.execute(f'insert into {self.sid} values(\'{cid}\', \'{_hash}\')')
         return True
 

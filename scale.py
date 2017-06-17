@@ -6,10 +6,7 @@ from importlib import import_module
 from session import Session
 
 # import config
-try:
-    import config
-except ImportError:
-    import default_config as config
+import modules.config_data
 monkey.patch_all(aggressive=True)
 
 
@@ -17,6 +14,8 @@ class Scale_console:
     def __init__(self):
         self.sessions = []
         self.queue = queue.Queue()
+        config = modules.config_data.config_data()
+        config.loads()
         for mod_name in config.sessions:
             inte, argv, *_ = config.sessions[mod_name]
             try:

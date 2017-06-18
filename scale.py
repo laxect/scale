@@ -15,7 +15,9 @@ class Scale_console:
         self.sessions = []
         self.queue = queue.Queue()
         config = modules.config_data.config_data()
-        config.loads()
+        cons = config.loads()
+        from pprint import pprint
+        pprint(cons)
         for mod_name in config.sessions:
             inte, argv, *_ = config.sessions[mod_name]
             try:

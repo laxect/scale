@@ -6,7 +6,7 @@ from importlib import import_module
 from session import Session
 
 # import config
-import modules.config_data
+import modules.database
 monkey.patch_all(aggressive=True)
 
 
@@ -14,7 +14,7 @@ class Scale_console:
     def __init__(self):
         self.sessions = []
         self.queue = queue.Queue()
-        config = modules.config_data.config_data()
+        config = modules.database.database()
         cons = config.loads()
         from pprint import pprint
         pprint(cons)

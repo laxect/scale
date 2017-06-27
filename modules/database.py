@@ -3,24 +3,23 @@ import sys
 import sqlite3
 
 
-class config_data():
-    'laxect.config_data.1.0.0'
-    # the default config for scale v2.0.0
-    def __init__(self):
-        self.id = 'laxect.config_data'
-        self._id = 'config'  # use for database table name
+class database():
+    'laxect.database.2.0.0'
+    def __init__(self, sid='config'):
+        self.id = 'laxect.database'
+        self._id = sid
+        # use for database table name
         self.path = sys.path[0]+'/'+self.id+'.tmp'
         self.sessions = {}
         self._init_check()
 
     def _init_check(self):
-        db = sqlite3.connect(self.path)
-        cur = db.cursor()
-        try:
-            cur.execute(f'select * from {self._id}')
-        except sqlite3.OperationalError:
-            self._init_table()
-        db.close()
+        with sqlite3.connect(self.path) as db:
+            cur = db.cursor()
+            try:
+                cur.execute(f'select * from {self._id}')
+            except sqlite3.OperationalError:
+                self._init_table()
 
     def _init_table(self):
         with sqlite3.connect(self.path) as db:
@@ -28,6 +27,7 @@ class config_data():
             cur.execute(f'create table {self._id} (key text, value text)')
 
     def loads(self):
+        'load sessions from database.'
         with sqlite3.connect(self.path) as db:
             cur = db.cursor()
             cur.execute(f'select * from {self._id}')
@@ -45,7 +45,7 @@ class config_data():
 
 
 def main():
-    test = config_data()
+    test = database()
     print(test.loads())
 
 

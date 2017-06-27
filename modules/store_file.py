@@ -2,6 +2,7 @@
 # use this module to store anything u want, but u can never get your data back.
 # remember this moduls is just use to check whether a msg is up-to-date
 # may be change to other name in next fews releases.
+# will be abandoned in next release (v3.2.0)
 import json
 import hashlib
 

@@ -1,4 +1,6 @@
 # the alternative for store_file
+# Abandoned in this release.
+# will be replace with new database in no time.
 import sys
 import sqlite3
 import hashlib

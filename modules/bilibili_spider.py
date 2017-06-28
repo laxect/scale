@@ -3,12 +3,12 @@ import json
 import gevent
 import requests
 # my module
-from . import store_file
+from modules import database
 
 
 class bilibili_spider():
     'a spider espeacially design for bilibili bangumi'
-    # laxect.bilibili_spider.2.1.0
+    # laxect.bilibili_spider.3.1.0
     def __init__(self, aim):
         'aim in stand of which bangumi you want to watch'
         self._aims = aim
@@ -33,8 +33,8 @@ class bilibili_spider():
             eps[0]['index_title'],
             eps[0]['webplay_url'])
         fres = "%s 更新了第%s集 %s\n%s" % res  # format string
-        with store_file.data_file(self._id(aim)) as hash_map:
-            if hash_map.check_up_to_date(str(res)):
+        with database.database(self._id(aim)) as db:
+            if db.check_up_to_date(aim, str(res)):
                 return (fres, self._id(aim))
         return None
 

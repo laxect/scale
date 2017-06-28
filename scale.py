@@ -14,6 +14,7 @@ class Scale_console:
     def __init__(self):
         self.sessions = []
         self.queue = queue.Queue()
+
         config = database.database()
         cons = config.loads()
         from pprint import pprint

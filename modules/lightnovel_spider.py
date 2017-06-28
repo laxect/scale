@@ -1,10 +1,10 @@
 import re
 import requests
-from . import data_base
+from modules import database
 
 
 class light_novel_spider():
-    # light_novel_spider V1.0.0
+    # light_novel_spider V2.1.0
     # need data_base V1.0.0 to work proprely.
     # doesn't work well with store_file
     def __init__(self, keywards):
@@ -26,7 +26,7 @@ class light_novel_spider():
         res = []
         for keyward in self.keywards:
             pattern = re.findall('.*'+keyward+'.*', text)
-            with data_base.data_base(self._id) as db:
+            with database.database(self._id) as db:
                 for item in pattern:
                     cid = re.findall('thread-(\d+)-1-1', item)[0]
                     content = re.findall('中|完成', item)[0]

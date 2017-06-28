@@ -31,11 +31,9 @@ class database():
         database._lock.release()
 
     def _init_table(self):
-        database._lock.acquire()
         with sqlite3.connect(self.path) as db:
             cur = db.cursor()
             cur.execute(f'create table {self._id} (key text, value text)')
-        database._lock.release()
 
     def loads(self):
         'load sessions from database.'

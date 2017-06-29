@@ -7,7 +7,7 @@ class light_novel_spider():
     # light_novel_spider V3.1.0
     # doesn't work well with store_file
     def __init__(self, keywards):
-        self._id = 'laxect.light_novel_spider'
+        self.id = 'laxect.light_novel_spider'
         self.keywards = keywards
         self.url = 'https://www.lightnovel.cn/forum-173-1.html'
 
@@ -25,7 +25,7 @@ class light_novel_spider():
         res = []
         for keyward in self.keywards:
             pattern = re.findall('.*'+keyward+'.*', text)
-            with database.database(self._id) as db:
+            with database.database(self.id) as db:
                 for item in pattern:
                     cid = re.findall('thread-(\d+)-1-1', item)[0]
                     content = re.findall('中|完成', item)[0]

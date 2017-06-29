@@ -4,7 +4,7 @@ from modules import database
 
 
 class light_novel_spider():
-    # light_novel_spider V2.1.0
+    # light_novel_spider V3.1.0
     # doesn't work well with store_file
     def __init__(self, keywards):
         self._id = 'laxect.light_novel_spider'
@@ -33,7 +33,9 @@ class light_novel_spider():
                         res.append(self._format_item(cid, item, content))
         return res
 
-    def run(self, que):
+    def run(self, que, keywards=None):
+        if keywards:
+            self.keywards = keywards
         res = self._handle(requests.get(self.url).text)
         for item in res:
             if item:

@@ -1,21 +1,18 @@
 import re
 import json
-import gevent
 import requests
+
 # my module
 from modules import database
 
 
 class bilibili_spider():
     'a spider espeacially design for bilibili bangumi'
-    # laxect.bilibili_spider.3.1.0
+    # laxect.bilibili_spider.5.2.0
     def __init__(self, aim):
         'aim in stand of which bangumi you want to watch'
-        self._aims = aim
+        self.aims = aim
         self.id = 'laxect.bilibili_spider'
-
-    def _id(self, aim):
-        return f'laxect.bilibili_spider.{aim}'
 
     def _url(self, aim):
         url = f'http://bangumi.bilibili.com/jsonp/seasoninfo/{aim}\
@@ -33,22 +30,22 @@ class bilibili_spider():
             eps[0]['index_title'],
             eps[0]['webplay_url'])
         fres = "%s 更新了第%s集 %s\n%s" % res  # format string
-        with database.database(self._id(aim)) as db:
+        with database.database(self.id) as db:
             if db.check_up_to_date(aim, str(res)):
-                return (fres, self._id(aim))
+                return fres
         return None
 
-    def _run(self, que, aim):
-        res = self._handle(requests.get(self._url(aim)).text, aim)
-        if res:
-            que.put(res[0])
+    def _run(self, que):
+        for aim in self.aims:
+            res = self._handle(requests.get(self._url(aim)).text, aim)
+            if res:
+                que.put(res)
 
-    def run(self, que):
+    def run(self, que, aims=None):
         'the standard run entry'
-        pool = []
-        for aim in self._aims:
-            pool.append(gevent.spawn(self._run, que, aim))
-        gevent.joinall(pool)
+        if aims:
+            self._aims = aims
+        self._run(que)
 
 
 def mod_init(aim):

@@ -44,6 +44,7 @@ class bilibili_spider():
             que.put(res[0])
 
     def run(self, que):
+        'the standard run entry'
         pool = []
         for aim in self._aims:
             pool.append(gevent.spawn(self._run, que, aim))

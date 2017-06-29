@@ -1,5 +1,6 @@
 import re
 import json
+import gevent
 import requests
 
 # my module
@@ -35,17 +36,19 @@ class bilibili_spider():
                 return fres
         return None
 
-    def _run(self, que):
-        for aim in self.aims:
-            res = self._handle(requests.get(self._url(aim)).text, aim)
-            if res:
-                que.put(res)
+    def _run(self, que, aim):
+        res = self._handle(requests.get(self._url(aim)).text, aim)
+        if res:
+            que.put(res)
 
     def run(self, que, aims=None):
         'the standard run entry'
         if aims:
             self._aims = aims
-        self._run(que)
+        pool = []
+        for aim in self.aims:
+            pool.append(gevent.spawn(self._run, que, aim))
+        gevent.joinall(pool)
 
 
 def mod_init(aim):

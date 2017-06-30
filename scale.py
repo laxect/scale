@@ -4,8 +4,6 @@ from importlib import import_module
 
 # my module
 from session import Session
-
-# import config
 from modules import database
 monkey.patch_all(aggressive=True)
 

@@ -25,7 +25,8 @@ class Scale_console:
             except ImportError as err:
                 print('Error when inital: %s' % err)
                 exit(1)
-            self.sessions.append(Session(mod.mod_init(argv), inte, self.queue))
+            self.sessions.append(
+                Session(mod.mod_init(argv), inte, self.queue, mod_name))
         print('scale inital complete.')
 
     def run(self):

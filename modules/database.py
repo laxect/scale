@@ -60,14 +60,14 @@ class database():
             db.commit()
         database._lock.release()
 
-    def session_update(self, key, new_value, table=None):
+    def session_update(self, key, value, table=None):
         'standard session update func. also the back-end of config_update.'
         if table is None:
             table = self._id
         database._lock.acquire()
         with sqlite3.connect(self.path) as db:
             cur = db.cursor()
-            sql = f'''update {table} set value={new_value} where key={key}'''
+            sql = f'''update {table} set value="{value}" where key="{key}"'''
             cur.execute(sql)
             db.commit()
         database._lock.release()

@@ -5,7 +5,7 @@ from telegram.ext import Updater, CommandHandler
 
 class scales_telegram_bot:
     'a telegram bot, has few function'
-    # laxect.scales_bot.2.1.1
+    # laxect.scales_bot.2.2.1
     def __init__(self, token, chat_id=None):
         self.id = 'laxect.telegram_bot'
         self.updater = Updater(token)
@@ -50,7 +50,7 @@ class scales_telegram_bot:
             item = queue.get()
             self.updater.bot.send_message(self.chat_id, str(item))
 
-    def run(self, queue):
+    def run(self, queue, args=None):
         pool = [
             gevent.spawn(self._run, queue),
             gevent.spawn(self.updater.start_polling)

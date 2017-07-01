@@ -21,6 +21,9 @@ class scales_telegram_bot:
         self.updater.dispatcher.add_handler(
             CommandHandler('seek', self.seek)
         )
+        self.updater.dispatcher.add_handler(
+            CommandHandler('add', self.add)
+        )
 
     def start(self, bot, update):
         'do something with /start'
@@ -35,6 +38,12 @@ class scales_telegram_bot:
     def update(self, bot, update):
         'update config when recvive /update'
         _, key, value, *_ = update.message['text']
+
+    def add(self, bot, update):
+        'add a argv to a session'
+        _, key, value, *_ = update.message['text'].split(' ')
+        self.db.config_add(key, value)
+        update.message.reply_text(self.db.config_seek(key))
 
     def _run(self, queue):
         while True:

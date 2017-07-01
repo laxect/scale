@@ -4,10 +4,9 @@ from gevent.lock import Semaphore
 
 
 class database():
-    'laxect.database.3.4.0'
+    'laxect.database.3.6.1'
     # used to name as config_date
-    _lock = Semaphore(1)
-    # a global sqlite datbase lock.
+    _lock = Semaphore(1)  # a global sqlite datbase lock.
 
     def __init__(self, sid='config'):
         self.id = 'laxect.database'
@@ -16,7 +15,6 @@ class database():
         self.path = sys.path[0]+'/'+self.id+'.tmp'
         self.sessions = {}
         # use for config
-
         self._init_check()
 
     def _init_check(self):
@@ -74,7 +72,19 @@ class database():
 
     def config_update(self, key, value):
         'the front of session_update'
-        self.sessions(key=key, value=value, table='config')
+        self.session_update(key=key, value=value, table='config')
+
+    def config_add(self, key, value):
+        'add a new value to a session'
+        res = self.session_seek(key=key, table='config')
+        # if res is a list and only a list
+        res = res[0][1]
+        loc = locals()
+        exec(f'old_tuple = {res}')
+        res = loc['old_tuple']
+        new_tuple = (res[0], res[1]+(value, ))
+        print(new_tuple)
+        self.config_update(key=key, value=str(new_tuple))
 
     def session_seek(self, key, table=None):
         'standard session seek func.'
@@ -86,12 +96,13 @@ class database():
             cur = db.cursor()
             cur.execute(sql)
             res = cur.fetchall()
-            return str(res)
         database._lock.release()
+        return res
 
     def config_seek(self, key):
         'config seek func use session_seek'
-        return self.session_seek(key=key, table='config')
+        return str(self.session_seek(key=key, table='config'))
+        # note that session_seek return a list while this func return a str.
 
     # design for common usage.
     def __enter__(self):
@@ -121,12 +132,3 @@ class database():
 
     def __exit__(self, exc_ty, exc_val, tb):
         pass
-
-
-def main():
-    test = database()
-    print(test.loads())
-
-
-if __name__ == '__main__':
-    main()

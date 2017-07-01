@@ -45,7 +45,7 @@ class database():
             exec(f"self.sessions['{key}'] = {values}")
         return self.sessions
 
-    # in fact, this function was used at all.
+    # in fact, this function was not used at all.
     def new_session(self, key, value):
         """
             add a new session to database.

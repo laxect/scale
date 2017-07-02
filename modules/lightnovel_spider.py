@@ -5,7 +5,6 @@ from modules import database
 
 class light_novel_spider():
     # light_novel_spider V3.1.0
-    # doesn't work well with store_file
     def __init__(self, keywards):
         self.id = 'laxect.light_novel_spider'
         self.keywards = keywards

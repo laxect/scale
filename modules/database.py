@@ -5,7 +5,6 @@ from gevent.lock import Semaphore
 
 class database():
     'laxect.database.3.6.2'
-    # used to name as config_date
     _lock = Semaphore(1)  # a global sqlite datbase lock.
 
     def __init__(self, sid='config'):

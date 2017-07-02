@@ -40,20 +40,20 @@ class database():
             sessions = cur.fetchall()
         database._lock.release()
         for key, values in sessions:
-            exec(f"self.sessions['{key}'] = {values}")
+            exec(f'self.sessions["{key}"] = {values}')
         return self.sessions
 
     # in fact, this function was not used at all.
     def new_session(self, key, value):
-        """
+        '''
             add a new session to database.
             Args :  key: Text, values: text
             return : None
-        """
+        '''
         database._lock.acquire()
         with sqlite3.connect(self.path) as db:
             cur = db.cursor()
-            sql = f"""insert into {self._id} values('{key}', "{value}")"""
+            sql = f'insert into {self._id} values("{key}", "{value}")'
             cur.execute(sql)
             db.commit()
         database._lock.release()
@@ -65,7 +65,7 @@ class database():
         database._lock.acquire()
         with sqlite3.connect(self.path) as db:
             cur = db.cursor()
-            sql = f'''update {table} set value="{value}" where key="{key}"'''
+            sql = f'update {table} set value="{value}" where key="{key}"'
             cur.execute(sql)
             db.commit()
         database._lock.release()
@@ -90,7 +90,7 @@ class database():
         'standard session seek func.'
         if table is None:
             table = self._id
-        sql = f'''select * from {table} where key="{key}"'''
+        sql = f'select * from {table} where key="{key}"'
         database._lock.acquire()
         with sqlite3.connect(self.path) as db:
             cur = db.cursor()
@@ -113,7 +113,7 @@ class database():
         database._lock.acquire()
         with sqlite3.connect(self.path) as db:
             cur = db.cursor()
-            cur.execute(f"select value from '{self._id}' where key='{cid}'")
+            cur.execute(f'select value from "{self._id}" where key="{cid}"')
             res = cur.fetchall()
             if res and res[0][0] == content:
                 check_result = False

@@ -30,7 +30,7 @@ class bilibili_spider():
             eps[0]['index'],
             eps[0]['index_title'],
             eps[0]['webplay_url'])
-        fres = "%s 更新了第%s集 %s\n%s" % res  # format string
+        fres = '%s 更新了第%s集 %s\n%s' % res  # format string
         with database.database(self.id) as db:
             if db.check_up_to_date(aim, str(res)):
                 return fres

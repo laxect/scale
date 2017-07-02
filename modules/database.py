@@ -4,7 +4,7 @@ from gevent.lock import Semaphore
 
 
 class database():
-    'laxect.database.3.6.1'
+    'laxect.database.3.6.2'
     # used to name as config_date
     _lock = Semaphore(1)  # a global sqlite datbase lock.
 
@@ -118,13 +118,14 @@ class database():
             if res and res[0][0] == content:
                 check_result = False
             elif res:
-                sql = """update {self._id} set """.join(
-                    """value="{content}" where cid="{cid}" """)
-                cur.execute(sql)
+                cur.execute(
+                    f'update {self._id} set value="{content}" where key="{cid}"'
+                )
                 check_result = True
             else:
-                sql = f"""insert into {self._id} values("{cid}", "{content}")"""
-                cur.execute(sql)
+                cur.execute(
+                    f'insert into {self._id} values("{cid}", "{content}")'
+                )
                 check_result = True
             db.commit()
         database._lock.release()

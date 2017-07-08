@@ -96,5 +96,6 @@ test*
 
 # run time files
 *.tmp
+*.backup
 
 # Google app Engine

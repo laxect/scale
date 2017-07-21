@@ -91,11 +91,6 @@ ENV/
 # my setting
 tmp/
 
-# test file
-test*
-
 # run time files
 *.tmp
 *.backup
-
-# Google app Engine

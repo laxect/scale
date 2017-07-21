@@ -4,7 +4,7 @@ from gevent.lock import Semaphore
 
 
 class database():
-    'laxect.database.3.6.2'
+    'laxect.database.3.6.3'
     _lock = Semaphore(1)  # a global sqlite datbase lock.
 
     def __init__(self, sid='config'):
@@ -16,20 +16,25 @@ class database():
         # use for config
         self._init_check()
 
+    # check if the table is exist.
     def _init_check(self):
         database._lock.acquire()
         with sqlite3.connect(self.path) as db:
             cur = db.cursor()
             try:
                 cur.execute(f'select * from {self._id}')
+                cur.fetchall()
             except sqlite3.OperationalError:
                 self._init_table(cur)
             db.commit()
         database._lock.release()
 
+    # be warn of that this func will NOT acquire for lock.
     def _init_table(self, cur):
         cur.execute(f'create table {self._id} (key text, value text)')
 
+    # loads config from database.
+    # return a dict contains config.
     def loads(self):
         'load sessions from database.'
         database._lock.acquire()
@@ -82,7 +87,6 @@ class database():
         exec(f'old_tuple = {res}')
         res = loc['old_tuple']
         new_tuple = (res[0], res[1]+(value, ))
-        print(new_tuple)
         self.config_update(key=key, value=str(new_tuple))
 
     def session_seek(self, key, table=None):

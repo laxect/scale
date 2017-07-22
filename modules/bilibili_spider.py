@@ -9,7 +9,7 @@ from modules import database
 
 class bilibili_spider():
     'a spider espeacially design for bilibili bangumi'
-    # laxect.bilibili_spider.5.3.0
+    # laxect.bilibili_spider.5.3.1
     def __init__(self, aim):
         'aim in stand of which bangumi you want to watch'
         self.aims = aim
@@ -44,7 +44,7 @@ class bilibili_spider():
     def run(self, que, aims=None):
         'the standard run entry'
         if aims:
-            self._aims = aims
+            self.aims = aims
         pool = []
         for aim in self.aims:
             pool.append(gevent.spawn(self._run, que, aim))

@@ -4,7 +4,7 @@ from gevent.lock import Semaphore
 
 
 class database():
-    'laxect.database.3.6.3'
+    'laxect.database.3.6.4'
     _lock = Semaphore(1)  # a global sqlite datbase lock.
 
     def __init__(self, sid='config'):
@@ -12,7 +12,9 @@ class database():
         self._id = sid.replace('.', '_')
         # use for database table name
         self.path = sys.path[0]+'/'+self.id+'.tmp'
+        # be ware of that the sessions will not update automately.
         self.sessions = {}
+        self.session_state = 'out_of_date'
         # use for config
         self._init_check()
 
@@ -45,6 +47,7 @@ class database():
         database._lock.release()
         for key, values in sessions:
             exec(f'self.sessions["{key}"] = {values}')
+        self.session_state = 'up_to_date'
         return self.sessions
 
     # in fact, this function was not used at all.
@@ -73,6 +76,7 @@ class database():
             cur.execute(sql)
             db.commit()
         database._lock.release()
+        self.session_state = 'out_of_date'
 
     def config_update(self, key, value):
         'the front of session_update'

@@ -12,6 +12,7 @@ class bilibili_spider(stand_task.task):
     'a spider espeacially design for bilibili bangumi'
     def __init__(self, aim=None):
         'aim in stand of which bangumi you want to watch'
+        super().__init__()
         self.id = 'laxect.bilibili_spider'
         self.version = 1
 
@@ -55,11 +56,3 @@ class bilibili_spider(stand_task.task):
 
 def mod_init(aim):
     return bilibili_spider(aim=aim)
-
-
-if __name__ == '__main__':
-    class test_queue:
-        def put(self, obj):
-            print(obj)
-
-    print(mod_init().run(test_queue()))

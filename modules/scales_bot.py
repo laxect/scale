@@ -1,17 +1,18 @@
-import gevent
 from modules import database
 from telegram.ext import Updater, CommandHandler
+from . import stand_task
 
 
-class scales_telegram_bot:
+class scales_telegram_bot(stand_task.service):
     'a telegram bot, has few function'
     def __init__(self, token, chat_id=None):
+        super().__init__()
         self.id = 'laxect.telegram_bot'
-        self.version = 1
+        self.version = 2
+        self.inbox = 'inbox'
         self.updater = Updater(token)
         self.chat_id = chat_id
         self.db = database.database(self.id)
-
         self.updater.dispatcher.add_handler(
             CommandHandler('start', self.start)
         )
@@ -45,29 +46,13 @@ class scales_telegram_bot:
         self.db.config_add(key, value)
         update.message.reply_text(self.db.config_seek(key))
 
-    def _run(self, queue):
-        while True:
-            item = queue.get()
-            self.updater.bot.send_message(self.chat_id, str(item))
+    def _msg_handle(self, msg):
+        self.updater.bot.send_message(self.chat_id, str(msg))
 
-    def run(self, queue, args=None):
-        pool = [
-            gevent.spawn(self._run, queue),
-            gevent.spawn(self.updater.start_polling)
-        ]
-        gevent.joinall(pool)
+    def _run(self, mail_service=None, targets=None):
+        self.updater.start_polling()
 
 
 def mod_init(argv):
     token, chat_id = argv
     return scales_telegram_bot(token, chat_id)
-
-
-if __name__ == '__main__':
-    from gevent import monkey
-    monkey.patch_socket()
-    from gevent.queue import Queue
-    Q = Queue()
-    Q.put('hello world')
-    bot = mod_init()
-    bot.run(Q)

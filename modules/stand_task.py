@@ -20,14 +20,23 @@ class task():
         return self._handle(targets)
 
     def run(self, mail_service, targets, inbox=None):
-        res = self._run(targets)
-        for item in res:
-            if item:
-                msg_pack = {}
-                msg_pack['msg'] = item
-                msg_pack['from'] = self.id
-                msg_pack['send_to'] = self.send_to
-                mail_service.put(msg_pack)
+        try:
+            res = self._run(targets)
+            for item in res:
+                if item:
+                    msg_pack = {
+                        'msg': item,
+                        'from': self.id,
+                        'send_to': self.send_to,
+                    }
+                    mail_service.put(msg_pack)
+        except Exception as err:
+                    msg_pack = {
+                        'msg': f'module {self.id} crashed for\n\t{err}',
+                        'from': self.id,
+                        'send_to': 'inbox',
+                    }
+                    mail_service.put(msg_pack)
 
 
 class service(task):

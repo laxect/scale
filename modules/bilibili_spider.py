@@ -2,18 +2,18 @@ import re
 import json
 import gevent
 import requests
+from . import stand_task
 
 # my module
 from modules import database
 
 
-class bilibili_spider():
+class bilibili_spider(stand_task.task):
     'a spider espeacially design for bilibili bangumi'
-    # laxect.bilibili_spider.5.3.1
-    def __init__(self, aim):
+    def __init__(self, aim=None):
         'aim in stand of which bangumi you want to watch'
-        self.aims = aim
         self.id = 'laxect.bilibili_spider'
+        self.version = 1
 
     def _url(self, aim):
         url = f'http://bangumi.bilibili.com/jsonp/seasoninfo/{aim}\
@@ -36,19 +36,21 @@ class bilibili_spider():
                 return fres
         return None
 
-    def _run(self, que, aim):
-        res = self._handle(requests.get(self._url(aim)).text, aim)
-        if res:
-            que.put(res)
+    def _aim_run(self, aim, res):
+        try:
+            tres = self._handle(requests.get(self._url(aim)).text, aim)
+        except requests.exceptions.RequestException as err:
+            return
+        if tres:
+            res.append(tres)
 
-    def run(self, que, aims=None):
-        'the standard run entry'
-        if aims:
-            self.aims = aims
+    def _run(self, aims):
+        res = []
         pool = []
-        for aim in self.aims:
-            pool.append(gevent.spawn(self._run, que, aim))
+        for aim in aims:
+            pool.append(gevent.spawn(self._aim_run, aim, res))
         gevent.joinall(pool)
+        return res
 
 
 def mod_init(aim):

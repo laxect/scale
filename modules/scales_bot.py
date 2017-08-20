@@ -5,9 +5,9 @@ from telegram.ext import Updater, CommandHandler
 
 class scales_telegram_bot:
     'a telegram bot, has few function'
-    # laxect.scales_bot.2.2.1
     def __init__(self, token, chat_id=None):
         self.id = 'laxect.telegram_bot'
+        self.version = 1
         self.updater = Updater(token)
         self.chat_id = chat_id
         self.db = database.database(self.id)

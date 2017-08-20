@@ -1,12 +1,13 @@
 import re
 import requests
 from modules import database
+from . import stand_task
 
 
-class light_novel_spider():
-    # light_novel_spider V3.1.0
+class light_novel_spider(stand_task.task):
     def __init__(self, keywards):
         self.id = 'laxect.light_novel_spider'
+        self.version = 1
         self.keywards = keywards
         self.url = 'https://www.lightnovel.cn/forum-173-1.html'
 
@@ -32,13 +33,13 @@ class light_novel_spider():
                         res.append(self._format_item(cid, item, content))
         return res
 
-    def run(self, que, keywards=None):
+    def _run(self, keywards=None):
         if keywards:
             self.keywards = keywards
-        res = self._handle(requests.get(self.url).text)
-        for item in res:
-            if item:
-                que.put(item)
+        try:
+            return self._handle(requests.get(self.url).text)
+        except requests.exceptions.RequestException as err:
+            return []
 
 
 def mod_init(keywards):

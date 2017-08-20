@@ -53,8 +53,7 @@ class Scale_console:
 
     def task_run(self, task_id, task_obj, inte, system_inbox, task_inbox=None):
         while True:
-            if self.config.session_state == 'out_of_date':
-                self.config.loads()
+            self.config.loads()
             task_obj.run(
                 mail_service=system_inbox,
                 targets=self.config.sessions[task_id][1],

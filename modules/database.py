@@ -39,6 +39,8 @@ class database():
     # return a dict contains config.
     def loads(self):
         'load sessions from database.'
+        if self.session_state == 'up_to_date':
+            return
         database._lock.acquire()
         with sqlite3.connect(self.path) as db:
             cur = db.cursor()

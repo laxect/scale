@@ -14,7 +14,6 @@ class database():
         self.path = sys.path[0]+'/'+self.id+'.tmp'
         # be ware of that the sessions will not update automately.
         self.sessions = {}
-        self.session_state = 'out_of_date'
         # use for config
         self._init_check()
 
@@ -39,7 +38,7 @@ class database():
     # return a dict contains config.
     def loads(self):
         'load sessions from database.'
-        if self.session_state == 'up_to_date':
+        if database.session_state == 'up_to_date':
             return
         database._lock.acquire()
         with sqlite3.connect(self.path) as db:
@@ -49,7 +48,7 @@ class database():
         database._lock.release()
         for key, values in sessions:
             exec(f'self.sessions["{key}"] = {values}')
-        self.session_state = 'up_to_date'
+        database.session_state = 'up_to_date'
         return self.sessions
 
     # in fact, this function was not used at all.
@@ -66,6 +65,7 @@ class database():
             cur.execute(sql)
             db.commit()
         database._lock.release()
+        database.session_state = 'out_of_date'
 
     def session_update(self, key, value, table=None):
         'standard session update func. also the back-end of config_update.'
@@ -78,7 +78,7 @@ class database():
             cur.execute(sql)
             db.commit()
         database._lock.release()
-        self.session_state = 'out_of_date'
+        database.session_state = 'out_of_date'
 
     def config_update(self, key, value):
         'the front of session_update'

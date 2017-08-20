@@ -33,7 +33,7 @@ class light_novel_spider(stand_task.task):
                         res.append(self._format_item(cid, item, content[0]))
         return res
 
-    def _run(self, keywards=None):
+    def _run(self, keywards):
         try:
             return self._handle(requests.get(self.url).text, keywards)
         except requests.exceptions.RequestException as err:

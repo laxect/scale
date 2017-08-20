@@ -38,8 +38,6 @@ class database():
     # return a dict contains config.
     def loads(self):
         'load sessions from database.'
-        if database.session_state == 'up_to_date':
-            return
         database._lock.acquire()
         with sqlite3.connect(self.path) as db:
             cur = db.cursor()
@@ -48,7 +46,6 @@ class database():
         database._lock.release()
         for key, values in sessions:
             exec(f'self.sessions["{key}"] = {values}')
-        database.session_state = 'up_to_date'
         return self.sessions
 
     # in fact, this function was not used at all.
@@ -78,7 +75,6 @@ class database():
             cur.execute(sql)
             db.commit()
         database._lock.release()
-        database.session_state = 'out_of_date'
 
     def config_update(self, key, value):
         'the front of session_update'

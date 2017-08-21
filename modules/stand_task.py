@@ -1,4 +1,6 @@
 import gevent
+import traceback
+from gevent.queue import Empty
 
 
 class task():
@@ -12,18 +14,24 @@ class task():
         self.id = 'laxect.task'
         self.send_to = 'inbox'
         self.inbox = None  # design for task need inbox
+        self.debug = False
 
     def _handle(self, target):
         return 'helloworld'
 
     def _inbox_handle(self, inbox):
-        while True:
-            inbox.get(timeout=0)
+        try:
+            while True:
+                inbox.get(timeout=0)
+        except Empty:
+            pass
 
     def _run(self, targets):
         return self._handle(targets)
 
-    def run(self, mail_service, targets, inbox=None):
+    def run(self, mail_service, targets, inbox=None, debug=False):
+        if debug:
+            self.debug = True
         try:
             if inbox:
                 self._inbox_handle(inbox)
@@ -38,7 +46,8 @@ class task():
                     mail_service.put(msg_pack)
         except Exception as err:
             msg_pack = {
-                'msg': f'module {self.id} crashed for\n\t{err}',
+                'msg': f'module {self.id} crashed for\n    {err}',
+                'details': traceback.format_exc(),
                 'from': self.id,
                 'send_to': 'inbox',
             }

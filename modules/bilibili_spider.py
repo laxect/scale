@@ -2,9 +2,10 @@ import re
 import json
 import gevent
 import requests
-from . import stand_task
+from gevent.queue import Empty
 
 # my module
+from . import stand_task
 from modules import database
 
 
@@ -14,7 +15,10 @@ class bilibili_spider(stand_task.task):
         'aim in stand of which bangumi you want to watch'
         super().__init__()
         self.id = 'laxect.bilibili_spider'
+        self.inbox = self.id
         self.version = 1
+        self.mode = 'from_database'
+        self.aims = []
 
     def _url(self, aim):
         url = f'http://bangumi.bilibili.com/jsonp/seasoninfo/{aim}\
@@ -45,13 +49,39 @@ class bilibili_spider(stand_task.task):
         if tres:
             res.append(tres)
 
-    def _run(self, aims):
+    def _run(self, targets):
+        if self.mode == 'from_inbox':
+            aims = self.aims
+        else:
+            aims = targets
+        if self.debug:
+            print('the argv that recv is')
+            print(aims)
         res = []
         pool = []
         for aim in aims:
             pool.append(gevent.spawn(self._aim_run, aim, res))
         gevent.joinall(pool)
+        if self.debug:
+            print('the res of run is')
+            print(res)
         return res
+
+    def _inbox_handle(self, inbox):
+        aims = []
+        try:
+            while True:
+                item = inbox.get(block=False)
+                if item:
+                    aims.append(item['msg'])
+        except Empty:
+            pass
+        if self.debug:
+            print('the argv recv from inbox is')
+            print(aims)
+        if aims:
+            self.aims = aims
+            self.mode = 'from_inbox'
 
 
 def mod_init(aim):

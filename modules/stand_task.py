@@ -1,4 +1,6 @@
 import gevent
+import traceback
+from gevent.queue import Empty
 
 
 class task():
@@ -12,15 +14,27 @@ class task():
         self.id = 'laxect.task'
         self.send_to = 'inbox'
         self.inbox = None  # design for task need inbox
+        self.debug = False
 
     def _handle(self, target):
         return 'helloworld'
 
+    def _inbox_handle(self, inbox):
+        try:
+            while True:
+                inbox.get(timeout=0)
+        except Empty:
+            pass
+
     def _run(self, targets):
         return self._handle(targets)
 
-    def run(self, mail_service, targets, inbox=None):
+    def run(self, mail_service, targets, inbox=None, debug=False):
+        if debug:
+            self.debug = True
         try:
+            if inbox:
+                self._inbox_handle(inbox)
             res = self._run(targets)
             for item in res:
                 if item:
@@ -31,12 +45,13 @@ class task():
                     }
                     mail_service.put(msg_pack)
         except Exception as err:
-                    msg_pack = {
-                        'msg': f'module {self.id} crashed for\n\t{err}',
-                        'from': self.id,
-                        'send_to': 'inbox',
-                    }
-                    mail_service.put(msg_pack)
+            msg_pack = {
+                'msg': f'module {self.id} crashed for\n    {err}',
+                'details': traceback.format_exc(),
+                'from': self.id,
+                'send_to': 'inbox',
+            }
+            mail_service.put(msg_pack)
 
 
 class service(task):
@@ -49,13 +64,16 @@ class service(task):
             self._msg_handle(item['msg'])
 
     def _run(self, mail_service=None, targets=None):
-        msg_pack = {}
-        msg_pack['msg'] = 'hello world'
-        msg_pack['from'] = self.id
-        msg_pack['send_to'] = self.send_to
+        msg_pack = {
+            'msg': 'helloworld',
+            'from': self.id,
+            'send_to': self.send_to,
+        }
         mail_service.put(msg_pack)
 
-    def run(self, mail_service=None, targets=None, inbox=None):
+    def run(self, mail_service=None, targets=None, inbox=None, debug=False):
+        if debug:
+            self.debug = True
         pool = [
             gevent.spawn(self._run, mail_service, targets),
             gevent.spawn(self._inbox_service, inbox)

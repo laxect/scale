@@ -16,6 +16,8 @@ class bilibili_spider(stand_task.task):
         self.id = 'laxect.bilibili_spider'
         self.inbox = self.id
         self.version = 1
+        self.mode = 'from_database'
+        self.aims = []
 
     def _url(self, aim):
         url = f'http://bangumi.bilibili.com/jsonp/seasoninfo/{aim}\
@@ -47,12 +49,24 @@ class bilibili_spider(stand_task.task):
             res.append(tres)
 
     def _run(self, aims):
+        if self.mode == 'from_inbox':
+            aims = self.aims
         res = []
         pool = []
         for aim in aims:
             pool.append(gevent.spawn(self._aim_run, aim, res))
         gevent.joinall(pool)
         return res
+
+    def _inbox_handle(self, inbox):
+        self.aims = []
+        try:
+            while True:
+                self.aims.append(inbox.get(block=False)['msg'])
+        except Exception:
+            pass
+        if self.aims:
+            self.mode = 'from_inbox'
 
 
 def mod_init(aim):

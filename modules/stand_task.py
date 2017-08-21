@@ -16,11 +16,17 @@ class task():
     def _handle(self, target):
         return 'helloworld'
 
+    def _inbox_handle(self, inbox):
+        while True:
+            inbox.get(timeout=0)
+
     def _run(self, targets):
         return self._handle(targets)
 
     def run(self, mail_service, targets, inbox=None):
         try:
+            if inbox:
+                self._inbox_handle(inbox)
             res = self._run(targets)
             for item in res:
                 if item:
@@ -31,12 +37,12 @@ class task():
                     }
                     mail_service.put(msg_pack)
         except Exception as err:
-                    msg_pack = {
-                        'msg': f'module {self.id} crashed for\n\t{err}',
-                        'from': self.id,
-                        'send_to': 'inbox',
-                    }
-                    mail_service.put(msg_pack)
+            msg_pack = {
+                'msg': f'module {self.id} crashed for\n\t{err}',
+                'from': self.id,
+                'send_to': 'inbox',
+            }
+            mail_service.put(msg_pack)
 
 
 class service(task):

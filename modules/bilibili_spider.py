@@ -14,6 +14,7 @@ class bilibili_spider(stand_task.task):
         'aim in stand of which bangumi you want to watch'
         super().__init__()
         self.id = 'laxect.bilibili_spider'
+        self.inbox = self.id
         self.version = 1
 
     def _url(self, aim):

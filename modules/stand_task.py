@@ -49,10 +49,11 @@ class service(task):
             self._msg_handle(item['msg'])
 
     def _run(self, mail_service=None, targets=None):
-        msg_pack = {}
-        msg_pack['msg'] = 'hello world'
-        msg_pack['from'] = self.id
-        msg_pack['send_to'] = self.send_to
+        msg_pack = {
+            'msg': 'helloworld',
+            'from': self.id,
+            'send_to': self.send_to,
+        }
         mail_service.put(msg_pack)
 
     def run(self, mail_service=None, targets=None, inbox=None):

@@ -71,7 +71,9 @@ class service(task):
         }
         mail_service.put(msg_pack)
 
-    def run(self, mail_service=None, targets=None, inbox=None):
+    def run(self, mail_service=None, targets=None, inbox=None, debug=False):
+        if debug:
+            self.debug = True
         pool = [
             gevent.spawn(self._run, mail_service, targets),
             gevent.spawn(self._inbox_service, inbox)

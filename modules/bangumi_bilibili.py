@@ -73,7 +73,7 @@ class bangumi_spider(stand_task.task):
         res = []
         pool = [gevent.spawn(self._search_bangumi, url, res) for url in urls]
         gevent.joinall(pool)
-        return [res, ]
+        return [res]
 
 
 def mod_init(targets=None):

@@ -110,7 +110,9 @@ class timer(task):
             now_time = datetime.datetime.now()
             next_time = self.next_time(now_time)
             if not debug:
-                gevent.sleep((next_time - now_time).second)
+                gevent.sleep((next_time - now_time).seconds)
+            else:  # the debug test area.
+                (next_time - now_time).seconds
             self.action(mail_service, targets, inbox)
         except Exception as err:
             msg_pack = {

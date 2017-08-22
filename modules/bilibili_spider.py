@@ -43,11 +43,11 @@ class bilibili_spider(stand_task.task):
 
     def _aim_run(self, aim, res):
         try:
-            tres = self._handle(requests.get(self._url(aim)).text, aim)
+            ts = self._handle(requests.get(self._url(aim), timeout=5).text, aim)
         except requests.exceptions.RequestException as err:
             return
-        if tres:
-            res.append(tres)
+        if ts:
+            res.append(ts)
 
     def _run(self, targets):
         if self.mode == 'from_inbox':

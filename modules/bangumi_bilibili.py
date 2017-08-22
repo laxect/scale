@@ -21,7 +21,7 @@ class bangumi_spider(stand_task.task):
 
     def _search_bangumi(self, url, res):
         try:
-            page = requests.get(url)
+            page = requests.get(url, timeout=5)
         except requests.exceptions.RequestException:
             return
         # auto detect encoding.
@@ -37,7 +37,7 @@ class bangumi_spider(stand_task.task):
     def _search_bilibili(self, keyward, res):
         url = f'https://search.bilibili.com/all?keyword={keyward}'
         try:
-            page = requests.get(url)
+            page = requests.get(url, timeout=5)
         except requests.exceptions.RequestException:
             return
         # auto detect encoding.
@@ -53,7 +53,7 @@ class bangumi_spider(stand_task.task):
     def _bilibili_page(self, bangumi_no, res):
         url = f'https://bangumi.bilibili.com/anime/{bangumi_no}'
         try:
-            page = requests.get(url)
+            page = requests.get(url, timeout=5)
         except requests.exceptions.RequestException:
             return
         page.encoding = page.apparent_encoding  # auto detect the encoding

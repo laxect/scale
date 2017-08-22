@@ -47,7 +47,7 @@ def bilibili_spider_test():
     test_task.run(test_mail_service(), targets, debug=True)
     test_task.run(
         test_mail_service(), targets,
-        inbox=test_mail_service(['1057']), debug=True
+        inbox=test_mail_service([['1057', '2809']]), debug=True
     )
 
 

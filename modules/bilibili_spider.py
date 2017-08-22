@@ -73,7 +73,7 @@ class bilibili_spider(stand_task.task):
             while True:
                 item = inbox.get(block=False)
                 if item:
-                    aims.append(item['msg'])
+                    aims = item['msg']
         except Empty:
             pass
         if self.debug:

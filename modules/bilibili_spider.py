@@ -60,7 +60,8 @@ class bilibili_spider(stand_task.task):
         res = []
         pool = []
         for aim in aims:
-            pool.append(gevent.spawn(self._aim_run, aim, res))
+            if aim:
+                pool.append(gevent.spawn(self._aim_run, aim, res))
         gevent.joinall(pool)
         if self.debug:
             print('the res of run is')

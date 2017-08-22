@@ -69,7 +69,8 @@ class bangumi_spider(stand_task.task):
     def _run(self, targets=None):
         urls = []
         for target in targets:
-            urls.extend(self._bangumi_url(target=target))
+            if target:
+                urls.extend(self._bangumi_url(target=target))
         res = []
         pool = [gevent.spawn(self._search_bangumi, url, res) for url in urls]
         gevent.joinall(pool)

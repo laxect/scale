@@ -1,4 +1,5 @@
 import gevent
+import datetime
 import traceback
 from gevent.queue import Empty
 
@@ -11,10 +12,19 @@ class task():
     message that doesn't point a specify inbox.
     '''
     def __init__(self, targets=None):
-        self.id = 'laxect.task'
+        self.id = None
         self.send_to = 'inbox'
         self.inbox = None  # design for task need inbox
         self.debug = False
+
+    def gen_msg_pack(self, content, send_to=None):
+        'generator a mp from metadata'
+        msg_pack = {
+            'msg': content,
+            'from': self.id,
+            'send_to': send_to if send_to else self.send_to,
+        }
+        return msg_pack
 
     def _handle(self, target):
         return 'helloworld'
@@ -38,12 +48,7 @@ class task():
             res = self._run(targets)
             for item in res:
                 if item:
-                    msg_pack = {
-                        'msg': item,
-                        'from': self.id,
-                        'send_to': self.send_to,
-                    }
-                    mail_service.put(msg_pack)
+                    mail_service.put(self.gen_msg_pack(item))
         except Exception as err:
             msg_pack = {
                 'msg': f'module {self.id} crashed for\n    {err}',
@@ -79,3 +84,39 @@ class service(task):
             gevent.spawn(self._inbox_service, inbox)
         ]
         gevent.joinall(pool)
+
+
+class timer(task):
+    # you can use this like a simple Alarm.
+    def __init__(self, targets=None):
+        '''
+        the init func for timer.
+        nextdate    func        : give the datetime of now, cal the next date.
+        once the time nextdate get, it will send msg.
+        '''
+        super().__init__()
+        self.targets = targets
+
+    def next_time(self, now_time):
+        return now_time + datetime.timedelta(seconds=39)
+
+    def action(self, mail_service, targets=None, inbox=None):
+        mail_service.put(self.gen_msg_pack('hello world'))
+
+    def run(self, mail_service, targets=None, inbox=None, debug=False):
+        if debug:
+            self.debug = True
+        try:
+            now_time = datetime.datetime.now()
+            next_time = self.next_time(now_time)
+            if not debug:
+                gevent.sleep((next_time - now_time).second)
+            self.action(mail_service, targets, inbox)
+        except Exception as err:
+            msg_pack = {
+                'msg': f'module {self.id} crashed for\n    {err}',
+                'details': traceback.format_exc(),
+                'from': self.id,
+                'send_to': 'inbox',
+            }
+            mail_service.put(msg_pack)

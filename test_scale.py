@@ -1,3 +1,4 @@
+#!/usr/bin/python3.6
 from gevent import monkey
 from gevent.queue import Empty
 from modules import bangumi_bilibili

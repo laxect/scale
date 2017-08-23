@@ -47,9 +47,15 @@ class scales_telegram_bot(stand_task.service):
         update.message.reply_text(self.db.config_seek(key))
 
     def _msg_handle(self, msg):
+        if self.debug:
+            msg = f'A message received:\n{str(msg)}'
+            self.debug_information_format(msg)
+            return
         self.updater.bot.send_message(self.chat_id, str(msg))
 
     def _run(self, mail_service=None, targets=None):
+        if self.debug:
+            return
         self.updater.start_polling()
 
 

@@ -5,15 +5,19 @@ from importlib import import_module
 # my module
 from modules import database
 monkey.patch_all(aggressive=True)
+# use for format output.
+div_line = '=================='
+div_line2 = '------------------'
 
 
-class Scale_console:
-    def __init__(self):
+class scale_console:
+    def __init__(self, debug=False):
+        self.debug = debug  # the debug mode and the release mode.
         self.sessions = []  # include all task and service need to run.
         self.inbox = queue.Queue()
         self.inbox_table = {}
         # load the config from database.
-        self.config = database.database()
+        self.config = database.database(sid='config', debug=debug)
         cons = self.config.loads()
         # output the details of config.
         from pprint import pprint
@@ -47,18 +51,35 @@ class Scale_console:
     def _scale_inbox_service(self):
         while True:
             mail = self.inbox.get()
+            if self.debug:
+                print(div_line + div_line)
+                for key in mail:
+                    print(div_line2 + div_line2)
+                    print('    ' + str(key) + ' :')
+                    print(mail[key])
+                    print(div_line2 + div_line2)
+                print(div_line + div_line)
             sendto = mail['send_to']
             if sendto in self.inbox_table:
                 self.inbox_table[sendto].put(mail)
 
     def task_run(self, task_id, task_obj, inte, system_inbox, task_inbox=None):
+        count = 0
         while True:
             self.config.loads()
             task_obj.run(
                 mail_service=system_inbox,
                 targets=self.config.sessions[task_id][1],
-                inbox=task_inbox)
-            gevent.sleep(inte)
+                inbox=task_inbox,
+                debug=self.debug
+            )
+            if self.debug:
+                count += 1
+                if count >= 3:
+                    return
+                gevent.sleep(60)
+            else:
+                gevent.sleep(inte)
 
     def run(self):
         'run task'
@@ -66,8 +87,8 @@ class Scale_console:
 
 
 if __name__ == '__main__':
-    scale_console = Scale_console()
+    scales = scale_console()
     try:
-        scale_console.run()
+        scales.run()
     except KeyboardInterrupt:
         print('Good Bye.')

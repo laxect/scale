@@ -1,6 +1,8 @@
 #!/usr/bin/python3.6
 from gevent import monkey
 from gevent.queue import Empty
+# my modules need to test.
+import scale_core
 from modules import timer
 from modules import bilibili_spider
 from modules import bangumi_bilibili
@@ -60,6 +62,14 @@ def timer_test(cycle_time=10):
         test_task.run(test_mail_service(), debug=True)
 
 
+def scales_test():
+    core_task = scale_core.scale_console(debug=True)
+    try:
+        core_task.run()
+    except KeyboardInterrupt:
+        print('Good Bye.')
+
+
 def test_task():
     timer_test(1)
     bilibili_spider_test()
@@ -67,4 +77,5 @@ def test_task():
 
 
 if __name__ == '__main__':
-    test_task()
+    # test_task()
+    scales_test()

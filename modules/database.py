@@ -5,9 +5,10 @@ from gevent.lock import Semaphore
 
 class database():
     'laxect.database.3.6.4'
+    debug = False  # the global debug setting
     _lock = Semaphore(1)  # a global sqlite datbase lock.
 
-    def __init__(self, sid='config'):
+    def __init__(self, sid='config', debug=False):
         self.id = 'laxect.database'
         self._id = sid.replace('.', '_')
         # use for database table name
@@ -16,6 +17,9 @@ class database():
         self.sessions = {}
         # use for config
         self._init_check()
+        # the debug setting
+        if debug:
+            database.debug = debug
 
     # check if the table is exist.
     def _init_check(self):
@@ -114,6 +118,8 @@ class database():
         return self
 
     def check_up_to_date(self, cid, content):
+        if database.debug:
+            return True
         check_result = False
         database._lock.acquire()
         with sqlite3.connect(self.path) as db:

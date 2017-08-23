@@ -55,8 +55,8 @@ class bilibili_spider(stand_task.task):
         else:
             aims = targets
         if self.debug:
-            print('the argv that recv is')
-            print(aims)
+            msg = f'the argv of run is:\n{str(aims)}'
+            self.debug_information_format(msg)
         res = []
         pool = []
         for aim in aims:
@@ -64,8 +64,8 @@ class bilibili_spider(stand_task.task):
                 pool.append(gevent.spawn(self._aim_run, aim, res))
         gevent.joinall(pool)
         if self.debug:
-            print('the res of run is')
-            print(res)
+            msg = f'the res of run is:\n{str(res)}'
+            self.debug_information_format(msg)
         return res
 
     def _inbox_handle(self, inbox):
@@ -78,8 +78,8 @@ class bilibili_spider(stand_task.task):
         except Empty:
             pass
         if self.debug:
-            print('the argv recv from inbox is')
-            print(aims)
+            msg = f'the argv recv from inbox is:\n{str(aims)}'
+            self.debug_information_format(msg)
         if aims:
             self.aims = aims
             self.mode = 'from_inbox'

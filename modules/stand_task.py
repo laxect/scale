@@ -2,6 +2,8 @@ import gevent
 import datetime
 import traceback
 from gevent.queue import Empty
+div_line = '=================='
+div_line2 = '------------------'
 
 
 class task():
@@ -17,12 +19,21 @@ class task():
         self.inbox = None  # design for task need inbox
         self.debug = False
 
-    def gen_msg_pack(self, content, send_to=None):
+    def debug_information_format(self, msg):
+        'design for standard debug information output'
+        print(div_line + div_line)
+        print(f'From {self.id}:')
+        print(div_line2 + div_line2)
+        print(str(msg))
+        print(div_line + div_line)
+
+    def gen_msg_pack(self, content, send_to=None, metadata=None):
         'generator a mp from metadata'
         msg_pack = {
             'msg': content,
             'from': self.id,
             'send_to': send_to if send_to else self.send_to,
+            'metadata': metadata,
         }
         return msg_pack
 
@@ -117,8 +128,8 @@ class timer(task):
             if not debug:
                 gevent.sleep(time_sleep)
             else:  # the debug test area.
-                print('the sleep of time is')
-                print(time_sleep)
+                msg = f'the sleep of time is:\n{time_sleep}'
+                self.debug_information_format(msg)
             self.action(mail_service, targets, inbox)
         except Exception as err:
             msg_pack = {

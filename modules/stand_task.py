@@ -18,6 +18,12 @@ class task():
         self.send_to = 'inbox'
         self.inbox = None  # design for task need inbox
         self.debug = False
+        # the hooks system.
+        self.hooks = {}
+
+    def set_hook(self, hook, action):
+        'set a action for specify hook'
+        self.hooks[hook] = action
 
     def debug_information_format(self, msg):
         'design for standard debug information output'
@@ -75,12 +81,13 @@ class service(task):
         print(msg)
 
     def _inbox_service(self, inbox):
+        timeout = 20 if self.debug else False
         try:
             while True:
-                item = inbox.get()
+                item = inbox.get(timeout=timeout)
                 self._msg_handle(item['msg'])
-        except gevent.hub.LoopExit as err:
-            pass  # use for debug time.
+        except Empty as err:
+            return
 
     def _run(self, mail_service=None, targets=None):
         msg_pack = {

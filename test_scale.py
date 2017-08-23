@@ -53,14 +53,15 @@ def bilibili_spider_test():
     )
 
 
-def timer_test():
+def timer_test(cycle_time=10):
     print(f'\ntask: timer\n{div_line}')
     test_task = timer.mod_init()
-    test_task.run(test_mail_service(), debug=True)
+    for i in range(cycle_time):
+        test_task.run(test_mail_service(), debug=True)
 
 
 def test_task():
-    timer_test()
+    timer_test(1)
     bilibili_spider_test()
     bangumi_bilibili_test()
 

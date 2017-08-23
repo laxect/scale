@@ -96,6 +96,8 @@ class timer(task):
         '''
         super().__init__()
         self.targets = targets
+        # remember to redefine the time_zone for your work.
+        self.time_zone = datetime.timezone(datetime.timedelta(hours=0), 'UTC')
 
     def next_time(self, now_time):
         return now_time + datetime.timedelta(seconds=39)
@@ -107,12 +109,16 @@ class timer(task):
         if debug:
             self.debug = True
         try:
-            now_time = datetime.datetime.now()
+            now_time = datetime.datetime.now(datetime.timezone.utc)
+            # adjust the time zone of now_time.
+            now_time.astimezone(self.time_zone)
             next_time = self.next_time(now_time)
+            time_sleep = (next_time - now_time).total_seconds()
             if not debug:
-                gevent.sleep((next_time - now_time).seconds)
+                gevent.sleep(time_sleep)
             else:  # the debug test area.
-                (next_time - now_time).seconds
+                print('the sleep of time is')
+                print(time_sleep)
             self.action(mail_service, targets, inbox)
         except Exception as err:
             msg_pack = {

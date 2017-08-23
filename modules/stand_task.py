@@ -75,9 +75,12 @@ class service(task):
         print(msg)
 
     def _inbox_service(self, inbox):
-        while True:
-            item = inbox.get()
-            self._msg_handle(item['msg'])
+        try:
+            while True:
+                item = inbox.get()
+                self._msg_handle(item['msg'])
+        except gevent.hub.LoopExit as err:
+            pass  # use for debug time.
 
     def _run(self, mail_service=None, targets=None):
         msg_pack = {

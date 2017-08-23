@@ -9,6 +9,18 @@ from modules import bangumi_bilibili
 monkey.patch_all(aggressive=True)
 div_line = '=================='
 div_line2 = '------------------'
+test_date = {
+    'bangumi_bilibili': (1500, ('laxect_cn',)),
+    'bilibili_spider': (1200, ('1071',)),
+    'lightnovel_spider': (1500, (
+        '和ヶ原聡司', '久遠侑', '七沢またり', '白鸟士郎',
+        '羊太郎', '入间人间', '十文字青', '葵せきな',
+    )),
+    'scales_bot': (0, (
+        '268094147:AAHNDBMmFQQaUqVm6mfaCe0a9uFmXWIiVBk', 290809873
+    )),
+    'timer': (0, ())
+}  # test date
 
 
 class test_mail_service():
@@ -63,7 +75,7 @@ def timer_test(cycle_time=10):
 
 
 def scales_test():
-    core_task = scale_core.scale_console(debug=True)
+    core_task = scale_core.scale_console(debug=True, config=test_date)
     try:
         core_task.run()
     except KeyboardInterrupt:

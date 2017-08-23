@@ -12,7 +12,7 @@ div_line2 = '------------------'
 
 
 class scale_console:
-    def __init__(self, debug=False):
+    def __init__(self, debug=False, config=None):
         self.debug = debug  # the debug mode and the release mode.
         self.sessions = []  # include all task and service need to run.
         self.inbox = queue.Queue()
@@ -21,18 +21,8 @@ class scale_console:
         self.config = database.database(sid='config', debug=debug)
         self.config.loads()
         if self.debug:
-            self.config.sessions = {
-                'bangumi_bilibili': (1500, ('laxect_cn',)),
-                'bilibili_spider': (1200, ('1071',)),
-                'lightnovel_spider': (1500, (
-                    '和ヶ原聡司', '久遠侑', '七沢またり', '白鸟士郎',
-                    '羊太郎', '入间人间', '十文字青', '葵せきな',
-                )),
-                'scales_bot': (0, (
-                    '268094147:AAHNDBMmFQQaUqVm6mfaCe0a9uFmXWIiVBk', 290809873
-                )),
-                'timer': (0, ())
-            }  # test date.
+            # load config from test date.
+            self.config.sessions = config
         # output the details of config.
         pprint(self.config.sessions)
         # after loads(), the config.sessions contain content.
@@ -63,7 +53,10 @@ class scale_console:
 
     def _scale_inbox_service(self):
         while True:
-            mail = self.inbox.get()
+            try:
+                mail = self.inbox.get()
+            except gevent.hub.LoopExit as err:
+                return  # for debug using.
             if self.debug:
                 print(div_line + div_line)
                 for key in mail:

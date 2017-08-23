@@ -1,4 +1,5 @@
 import gevent
+from pprint import pprint
 from gevent import monkey, queue
 from importlib import import_module
 
@@ -18,10 +19,22 @@ class scale_console:
         self.inbox_table = {}
         # load the config from database.
         self.config = database.database(sid='config', debug=debug)
-        cons = self.config.loads()
+        self.config.loads()
+        if self.debug:
+            self.config.sessions = {
+                'bangumi_bilibili': (1500, ('laxect_cn',)),
+                'bilibili_spider': (1200, ('1071',)),
+                'lightnovel_spider': (1500, (
+                    '和ヶ原聡司', '久遠侑', '七沢またり', '白鸟士郎',
+                    '羊太郎', '入间人间', '十文字青', '葵せきな',
+                )),
+                'scales_bot': (0, (
+                    '268094147:AAHNDBMmFQQaUqVm6mfaCe0a9uFmXWIiVBk', 290809873
+                )),
+                'timer': (0, ())
+            }  # test date.
         # output the details of config.
-        from pprint import pprint
-        pprint(cons)
+        pprint(self.config.sessions)
         # after loads(), the config.sessions contain content.
         self.tasks_init(self.config.sessions)
         print('scale inital complete.')

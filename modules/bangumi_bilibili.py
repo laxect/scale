@@ -1,7 +1,8 @@
 import re
-from lxml import etree
 import gevent
 import requests
+import datetime
+from lxml import etree
 # my module template
 from . import stand_task
 
@@ -51,20 +52,26 @@ class bangumi_spider(stand_task.task):
         gevent.joinall(pool)
 
     def _bilibili_page(self, bangumi_no, res):
-        url = f'https://bangumi.bilibili.com/anime/{bangumi_no}'
+        url = f'https://bangumi.bilibili.com/jsonp/seasoninfo/{bangumi_no}\
+.ver?callback=seasonListCallback'
+        CST = datetime.timezone(datetime.timedelta(hours=8), 'CST')
         try:
             page = requests.get(url, timeout=5)
         except requests.exceptions.RequestException:
             return
         page.encoding = page.apparent_encoding  # auto detect the encoding
-        html = etree.HTML(page.text)
-        info_row = html.xpath('//div[@class="info-row info-update"]/em/span')
-        judge = False
-        for info in info_row:
-            if re.findall('连载', info.text):
-                judge = True
-        if judge:
-            res.append(bangumi_no)
+        times = re.findall('\d+-\d+-\d+', page.text)
+        times.sort(reverse=True)
+        # detect if the bangumi was updated in 14 days.
+        if times:
+            least_time = times[0]
+            year, month, day = [int(date) for date in least_time.split('-')]
+            # time that bangumi least updated.
+            least_date = datetime.datetime(year, month, day, tzinfo=CST)
+            # time now.
+            delta = datetime.datetime.now(CST) - least_date
+            if delta < datetime.timedelta(days=14):
+                res.append(bangumi_no)
 
     def _run(self, targets=None):
         urls = []

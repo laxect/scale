@@ -83,8 +83,8 @@ def scales_test():
 
 
 def test_task():
-    timer_test(1)
-    bilibili_spider_test()
+    # timer_test(1)
+    # bilibili_spider_test()
     bangumi_bilibili_test()
 
 

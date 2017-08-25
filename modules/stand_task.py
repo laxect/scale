@@ -130,16 +130,15 @@ class timer(task):
         if debug:
             self.debug = True
         try:
-            now_time = datetime.datetime.now(datetime.timezone.utc)
+            now_time = datetime.datetime.now(self.time_zone)
             # adjust the time zone of now_time.
-            now_time.astimezone(self.time_zone)
             next_time = self.next_time(now_time)
             time_sleep = (next_time - now_time).total_seconds()
-            if not debug:
-                gevent.sleep(time_sleep)
-            else:  # the debug test area.
-                msg = f'the sleep of time is:\n{time_sleep}'
+            if debug:
+                msg = f'sleep time is:\n{time_sleep}'
                 self.debug_information_format(msg)
+                time_sleep = 1
+            gevent.sleep(time_sleep)
             self.action(mail_service, targets, inbox)
         except Exception as err:
             msg_pack = {

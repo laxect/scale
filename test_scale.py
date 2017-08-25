@@ -1,4 +1,5 @@
 #!/usr/bin/python3.6
+import datetime
 from gevent import monkey
 from gevent.queue import Empty
 # my modules need to test.
@@ -24,8 +25,9 @@ test_date = {
 
 
 class test_mail_service():
-    def __init__(self, contents=None):
+    def __init__(self, contents=None, output=True):
         self.count = 0
+        self.output = output
         if contents:
             self.contents = contents
             self.count = len(self.contents)
@@ -40,6 +42,8 @@ class test_mail_service():
         return msg_pack
 
     def put(self, item):
+        if not self.output:
+            return
         print(div_line + div_line)
         for key in item:
             print(div_line2 + div_line2)
@@ -53,14 +57,14 @@ def bangumi_bilibili_test():
     print(f'\ntask: bangumi_bilibili\n{div_line}')
     targets = ['laxect_cn']
     test_task = bangumi_bilibili.mod_init()
-    test_task.run(test_mail_service(), targets, debug=True)
+    test_task.run(test_mail_service(output=False), targets, debug=True)
 
 
 def bilibili_spider_test():
     print(f'\ntask: bilibili_spider\n{div_line}')
     targets = ['6330']
     test_task = bilibili_spider.mod_init(targets)
-    test_task.run(test_mail_service(), targets, debug=True)
+    test_task.run(test_mail_service(output=False), targets, debug=True)
     test_task.run(
         test_mail_service(), targets,
         inbox=test_mail_service([['1057', '2809']]), debug=True
@@ -70,8 +74,9 @@ def bilibili_spider_test():
 def timer_test(cycle_time=10):
     print(f'\ntask: timer\n{div_line}')
     test_task = timer.mod_init()
+    test_task.time_zone = datetime.timezone.utc
     for i in range(cycle_time):
-        test_task.run(test_mail_service(), debug=True)
+        test_task.run(test_mail_service(output=False), debug=True)
 
 
 def scales_test():
@@ -83,11 +88,11 @@ def scales_test():
 
 
 def test_task():
-    # timer_test(1)
-    # bilibili_spider_test()
+    timer_test(10)
+    bilibili_spider_test()
     bangumi_bilibili_test()
 
 
 if __name__ == '__main__':
-    # test_task()
+    test_task()
     scales_test()

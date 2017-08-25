@@ -88,7 +88,6 @@ class bangumi_spider(stand_task.task):
             pools.append(gevent.spawn(func, pages, res, len(urls)))
             gevent.joinall(pools)
             urls = res
-        return res
         return [res]
 
 

@@ -67,6 +67,8 @@ class task():
                 if item:
                     mail_service.put(self.gen_msg_pack(item))
         except Exception as err:
+            if self.debug:
+                raise err
             msg_pack = {
                 'msg': f'module {self.id} crashed for\n    {err}',
                 'details': traceback.format_exc(),
@@ -134,7 +136,7 @@ class timer(task):
             self.debug = True
         try:
             now_time = datetime.datetime.now(self.time_zone)
-            if debug:
+            if self.debug:
                 now_time = datetime.datetime(
                     2017, 3, 9, 23, 59, 59, tzinfo=self.time_zone)
                 now_time += datetime.timedelta(seconds=timer.debug_count)
@@ -144,13 +146,15 @@ class timer(task):
             # adjust the time zone of now_time.
             next_time = self.next_time(now_time)
             time_sleep = (next_time - now_time).total_seconds()
-            if debug:
+            if self.debug:
                 msg = f'sleep time is:\n{time_sleep}'
                 self.debug_information_format(msg)
                 time_sleep = 1
             gevent.sleep(time_sleep)
             self.action(mail_service, targets, inbox)
         except Exception as err:
+            if self.debug:
+                raise err
             msg_pack = {
                 'msg': f'module {self.id} crashed for\n    {err}',
                 'details': traceback.format_exc(),

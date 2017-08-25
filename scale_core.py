@@ -20,7 +20,7 @@ class scale_console:
         self.inbox = queue.Queue()
         self.inbox_table = {}
         # load the config from database.
-        self.config = database.database(sid='config', debug=debug)
+        self.config = database.database(sid='config', debug=self.debug)
         self.config.loads()
         if self.debug and config:
             # load config from test date.

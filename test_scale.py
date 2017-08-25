@@ -20,7 +20,7 @@ test_date = {
     'scales_bot': (0, (
         '268094147:AAHNDBMmFQQaUqVm6mfaCe0a9uFmXWIiVBk', 290809873
     )),
-    'timer': (0, ())
+    'timer': (0, ()),
 }  # test date
 
 
@@ -75,8 +75,12 @@ def timer_test(cycle_time=10):
     print(f'\ntask: timer\n{div_line}')
     test_task = timer.mod_init()
     test_task.time_zone = datetime.timezone.utc
-    for i in range(cycle_time):
-        test_task.run(test_mail_service(output=False), debug=True)
+    if cycle_time:
+        for i in range(cycle_time):
+            test_task.run(test_mail_service(output=False), debug=True)
+    else:
+        while True:
+            test_task.run(test_mail_service())
 
 
 def scales_test():
@@ -88,11 +92,11 @@ def scales_test():
 
 
 def test_task():
-    timer_test(10)
-    bilibili_spider_test()
+    # timer_test(10)
+    # bilibili_spider_test()
     bangumi_bilibili_test()
 
 
 if __name__ == '__main__':
-    test_task()
+    # test_task()
     scales_test()

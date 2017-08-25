@@ -22,7 +22,7 @@ class scale_console:
         # load the config from database.
         self.config = database.database(sid='config', debug=debug)
         self.config.loads()
-        if self.debug:
+        if self.debug and config:
             # load config from test date.
             self.config.sessions = config
         # output the details of config.

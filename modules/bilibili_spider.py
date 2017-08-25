@@ -54,9 +54,6 @@ class bilibili_spider(stand_task.task):
             aims = self.aims
         else:
             aims = targets
-        if self.debug:
-            msg = f'the argv of run is:\n{str(aims)}'
-            self.debug_information_format(msg)
         res = []
         pool = []
         for aim in aims:

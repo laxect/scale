@@ -57,14 +57,14 @@ def bangumi_bilibili_test():
     print(f'\ntask: bangumi_bilibili\n{div_line}')
     targets = ['laxect_cn']
     test_task = bangumi_bilibili.mod_init()
-    test_task.run(test_mail_service(output=False), targets, debug=True)
+    test_task.run(test_mail_service(), targets, debug=True)
 
 
 def bilibili_spider_test():
     print(f'\ntask: bilibili_spider\n{div_line}')
     targets = ['6330']
     test_task = bilibili_spider.mod_init(targets)
-    test_task.run(test_mail_service(output=False), targets, debug=True)
+    test_task.run(test_mail_service(), targets, debug=True)
     test_task.run(
         test_mail_service(), targets,
         inbox=test_mail_service([['1057', '2809']]), debug=True

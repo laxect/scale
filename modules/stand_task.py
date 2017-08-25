@@ -109,6 +109,9 @@ class service(task):
 
 class timer(task):
     # you can use this like a simple Alarm.
+    # -- debug setting --
+    debug_count = 0  # for debug use
+
     def __init__(self, targets=None):
         '''
         the init func for timer.
@@ -131,6 +134,13 @@ class timer(task):
             self.debug = True
         try:
             now_time = datetime.datetime.now(self.time_zone)
+            if debug:
+                now_time = datetime.datetime(
+                    2017, 3, 9, 23, 59, 59, tzinfo=self.time_zone)
+                now_time += datetime.timedelta(seconds=timer.debug_count)
+                msg = f'debug time is:\n{now_time}'
+                self.debug_information_format(msg)
+                timer.debug_count += 1
             # adjust the time zone of now_time.
             next_time = self.next_time(now_time)
             time_sleep = (next_time - now_time).total_seconds()

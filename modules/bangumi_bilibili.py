@@ -62,6 +62,7 @@ class bangumi_spider(stand_task.task):
                 f'https://bgm.tv/anime/list/{target}/wish'
             ]
 
+        # the packaged request func.
         def _get_page(urls, pages):
             for url in urls:
                 if url:
@@ -70,11 +71,11 @@ class bangumi_spider(stand_task.task):
                     except requests.exceptions.RequestException:
                         pages.put(None)
                         continue
+                    gevent.sleep(1)
         urls = []
         for target in targets:
             if target:
                 urls.extend(_bangumi_url(target=target))
-        # the packaged request func.
         handle_functions = [
                         self._search_bangumi,
                         self._search_bilibili,

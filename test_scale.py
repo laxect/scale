@@ -92,11 +92,11 @@ def scales_test():
 
 
 def test_task():
-    timer_test(10)
-    bilibili_spider_test()
+    # timer_test(10)
+    # bilibili_spider_test()
     bangumi_bilibili_test()
 
 
 if __name__ == '__main__':
     test_task()
-    scales_test()
+    # scales_test()

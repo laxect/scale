@@ -53,11 +53,13 @@ class task():
         'a standard page get gevenlet'
         while True:
             url = self.page_url_queue.get()
+            # use None as EOF
             if not url:
                 break
             try:
                 page = requests.get(url)
             except requests.exceptions.RequestException:
+                # will return None if any Error happened.
                 self.page_res_queue.put(None)
             else:
                 self.page_res_queue.put(page)

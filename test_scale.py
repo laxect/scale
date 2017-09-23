@@ -1,13 +1,9 @@
 #!/usr/bin/python3.6
-import datetime
+import gevent
 from gevent import monkey
 from gevent.queue import Empty
 # my modules need to test.
-import scale_core
 import standard_task
-from modules import timer
-from modules import bilibili_spider
-from modules import bangumi_bilibili
 monkey.patch_all(aggressive=True)
 div_line = '=================='
 div_line2 = '------------------'
@@ -34,13 +30,14 @@ class test_mail_service():
             self.count = len(self.contents)
 
     def get(self, block=True, timeout=False):
+        if block:
+            gevent.sleep(0)
         self.count -= 1
         if self.count < 0:
             raise Empty
-        msg_pack = {
+        return {
             'msg': self.contents[self.count]
         }
-        return msg_pack
 
     def put(self, item):
         if not self.output:
@@ -54,48 +51,28 @@ class test_mail_service():
         print(div_line + div_line)
 
 
-def bangumi_bilibili_test():
-    print(f'\ntask: bangumi_bilibili\n{div_line}')
-    targets = ['laxect_cn']
-    test_task = bangumi_bilibili.mod_init()
-    test_task.run(test_mail_service(), targets, debug=True)
+class scale_core_test_apis():
+    def __init__(self):
+        pass
 
 
-def bilibili_spider_test():
-    print(f'\ntask: bilibili_spider\n{div_line}')
-    targets = ['6330']
-    test_task = bilibili_spider.mod_init(targets)
-    test_task.run(test_mail_service(), targets, debug=True)
-    test_task.run(
-        test_mail_service(), targets,
-        inbox=test_mail_service([['1057', '2809']]), debug=True
-    )
+def standard_task_test():
+    class test_task(standard_task.task):
+        def __init__(self, mail_service):
+            super.__init__(mail_service)
+            self.id = 'laxect.test_task'
+            self.page_get_switch = True
 
+        def mail_handle(self, msg):
+            print(msg)
 
-def timer_test(cycle_time=10):
-    print(f'\ntask: timer\n{div_line}')
-    test_task = timer.mod_init()
-    test_task.time_zone = datetime.timezone.utc
-    if cycle_time:
-        for i in range(cycle_time):
-            test_task.run(test_mail_service(output=False), debug=True)
-    else:
-        while True:
-            test_task.run(test_mail_service())
-
-
-def scales_test():
-    core_task = scale_core.scale_console(debug=True, config=test_date)
-    try:
-        core_task.run()
-    except KeyboardInterrupt:
-        print('Good Bye.')
+        def _run(self):
+            self.scale_core_apis('test', ['helloworld'])
+            print('test task is runing')
 
 
 def test_task():
-    # timer_test(10)
-    # bilibili_spider_test()
-    bangumi_bilibili_test()
+    standard_task_test()
 
 
 if __name__ == '__main__':

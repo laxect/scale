@@ -5,10 +5,10 @@ import datetime
 from lxml import etree
 from gevent import queue
 # my module template
-from . import stand_task
+import standard_task
 
 
-class bangumi_spider(stand_task.task):
+class bangumi_spider(standard_task.task):
     def __init__(self, targets=None):
         super().__init__()
         self.id = 'laxect.bangumi_spider'

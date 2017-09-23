@@ -4,6 +4,7 @@ from gevent import monkey
 from gevent.queue import Empty
 # my modules need to test.
 import scale_core
+import standard_task
 from modules import timer
 from modules import bilibili_spider
 from modules import bangumi_bilibili

@@ -7,25 +7,16 @@ from importlib import import_module
 from modules import database
 # monkey patch for gevent.
 monkey.patch_all(aggressive=True)
-# use for format output.
-div_line = '=================='
-div_line2 = '------------------'
 
 
 class scale_console:
     def __init__(self, debug=False, config=None):
-        self.debug = debug  # the debug mode and the release mode.
-        self.task_count = 0  # design for debug mode.
         self.sessions = []  # include all task and service need to run.
         self.inbox = queue.Queue()
         self.inbox_table = {}
         # load the config from database.
         self.config = database.database(sid='config', debug=self.debug)
         self.config.loads()
-        if self.debug and config:
-            # load config from test date.
-            self.config.sessions = config
-        # output the details of config.
         pprint(self.config.sessions)
         # after loads(), the config.sessions contain content.
         self.tasks_init(self.config.sessions)
@@ -54,45 +45,24 @@ class scale_console:
             self.sessions.append(gevent.spawn(self._scale_inbox_service))
 
     def _scale_inbox_service(self):
-        timeout = 20 if self.debug else False  # debug switch
         while True:
             try:
-                mail = self.inbox.get(timeout=timeout)
+                mail = self.inbox.get()
             except queue.Empty as err:
-                if self.task_count == 0:  # for debug using.
-                    return
                 continue
-            if self.debug:
-                print(div_line + div_line)
-                for key in mail:
-                    print(div_line2 + div_line2)
-                    print('    ' + str(key) + ' :')
-                    print(mail[key])
-                    print(div_line2 + div_line2)
-                print(div_line + div_line)
             sendto = mail['send_to']
             if sendto in self.inbox_table:
                 self.inbox_table[sendto].put(mail)
 
     def task_run(self, task_id, task_obj, inte, task_inbox=None):
-        self.task_count += 1
-        count = 0
         while True:
             self.config.loads()
             task_obj.run(
                 mail_service=self.inbox,
                 targets=self.config.sessions[task_id][1],
                 inbox=task_inbox,
-                debug=self.debug
             )
-            if self.debug:
-                count += 1
-                if count >= 3:
-                    self.task_count -= 1
-                    return
-                gevent.sleep(10)
-            else:
-                gevent.sleep(inte)
+            gevent.sleep(inte)
 
     def run(self):
         'run task'

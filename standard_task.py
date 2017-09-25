@@ -94,7 +94,10 @@ class task():
                 self.status = 'run'
                 self._run()
                 self.status = 'pause'
-                gevent.sleep(inte)
+                if inte >= 0:
+                    gevent.sleep(inte)
+                else:
+                    break
         pools = self.service
         pools.append(gevent.spawn(run_steps))
         gevent.joinall(pools)

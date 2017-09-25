@@ -53,13 +53,25 @@ class test_mail_service():
 
 class scale_core_test_apis():
     def __init__(self):
-        pass
+        def get(self):
+            return {
+                'msg': 'helloworld from sca',
+                'meme-type': 'text',
+                'from': 'sca_test',
+                'from_port': 'main',
+                'send_to': 'laxect.test_task',
+                'send_to_port': 'sca',
+                'metadata': None,
+            }
+
+        def put(self, item):
+            print(item)
 
 
 def standard_task_test():
     class test_task(standard_task.task):
         def __init__(self, mail_service):
-            super.__init__(mail_service)
+            super().__init__(mail_service)
             self.id = 'laxect.test_task'
             self.page_get_switch = True
 
@@ -67,8 +79,13 @@ def standard_task_test():
             print(msg)
 
         def _run(self):
-            self.scale_core_apis('test', ['helloworld'])
+            print(self.scale_core_apis('test', ['helloworld']))
             print('test task is runing')
+
+    test_st = test_task(test_mail_service())
+    test_st.initalize(inbox=scale_core_test_apis())
+    test_st.scale_api_result.put('helloworld from sca')
+    test_st._run()
 
 
 def test_task():

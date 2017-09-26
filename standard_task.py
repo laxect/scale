@@ -88,16 +88,13 @@ class task():
         self.mail_service.put(self.gen_msg(args, fport='sca', send_to=sa_add))
         return self.scale_api_result.get()
 
-    def run(self, inte=3600):
-        def run_steps(inte=3600):
+    def run(self):
+        def run_steps():
             while True:
                 self.status = 'run'
                 self._run()
                 self.status = 'pause'
-                if inte >= 0:
-                    gevent.sleep(inte)
-                else:
-                    break
+                # gevent.sleep(inte)
         pools = self.service
         pools.append(gevent.spawn(run_steps))
         gevent.joinall(pools)

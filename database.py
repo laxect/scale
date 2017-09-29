@@ -10,7 +10,12 @@ class database():
         self.sessions = {}
         # use for config
         self._init_check()
-        # the debug setting
+        # func action table.
+        self.action_table = {
+            'new': self.new_session,
+            'seek': self.session_seek,
+            'update': self.session_update,
+        }
 
     # check if the table is exist.
     def _init_check(self):
@@ -51,7 +56,6 @@ class database():
             cur = db.cursor()
             cur.execute(sql)
             db.commit()
-        database.session_state = 'out_of_date'
 
     def session_update(self, key, value, table=None):
         'standard session update func. also the back-end of config_update.'
@@ -63,7 +67,8 @@ class database():
             cur.execute(sql)
             db.commit()
 
-    def session_seek(self, key, table=None):
+    def session_seek(self, key, value=None, table=None):
+        # look for that this func will not use *value*
         'standard session seek func.'
         if table is None:
             table = self._id
@@ -96,3 +101,11 @@ class database():
                 check_result = True
             db.commit()
         return check_result
+
+    def commit_handle(self, action, table=None, key=None, value=None):
+        '''
+        A common port for database usage
+        '''
+        table = table if table else self._id  # make sure that table isn't empty
+        if action in self.action_table:
+            return self.action_table[action](key=key, value=value, table=table)

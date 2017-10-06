@@ -27,9 +27,12 @@ class database():
             self._load_table(table, db)
         return self.session[table]
 
-    def _load_table(self, table, db):
+    def _load_table(self, table, db, switch=False):
         '''
         load data into session
+        table: str the name of table you want to load
+        db: a sqlite3 db object
+        switch: use ast to switch or not
         '''
         cur = db.cursor()
         try:
@@ -40,24 +43,15 @@ class database():
             cur.execute(f'select * from {table}')
             origin_date = cur.fetchall()
             for key, value in origin_date:
-                self.session[table][key] = ast.literal_eval(value)
+                if switch:
+                    self.session[table][key] = ast.literal_eval(value)
+                else:
+                    self.session[table][key] = value
         except sqlite3.OperationalError:
             # once if there is not table
             cur.execute(f'create table {table} (key text, value text)')
             db.commit()
         self.status_table[table] = up_to_date
-
-    # loads config from database.
-    # return a dict contains config.
-    def loads(self):
-        'load sessions from database.'
-        with sqlite3.connect(self.path) as db:
-            cur = db.cursor()
-            cur.execute(f'select * from {self._id}')
-            sessions = cur.fetchall()
-        for key, values in sessions:
-            exec(f'self.sessions["{key}"] = {values}')
-        return self.sessions
 
     def new_session(self, key, value, table=None):
         '''

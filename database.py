@@ -8,8 +8,6 @@ class database():
         self.path = sys.path[0]+'/'+self.id+'.tmp'
         # be ware of that the sessions will not update automately.
         self.sessions = {}
-        # use for config
-        self._init_check()
         # func action table.
         self.action_table = {
             'new': self.new_session,

@@ -1,34 +1,51 @@
+import ast
 import sys
 import sqlite3
 
 
+# status code list
+uninital = -1
+up_to_date = 0
+out_of_date = 1
+
+
 class database():
-    def __init__(self, sid='config'):
-        self._id = sid.replace('.', '_')  # use for database table name
-        self.path = sys.path[0]+'/'+self.id+'.tmp'
-        # be ware of that the sessions will not update automately.
-        self.sessions = {}
-        # func action table.
-        self.action_table = {
-            'new': self.new_session,
-            'seek': self.session_seek,
-            'update': self.session_update,
-        }
+    def __init__(self):
+        self.path = sys.path[0]+'/'+'laxect.database.tmp'
+        # TODO need to update sessions tp auto-update in the future.
+        # be ware of that the sessions will not update automately now.
+        # each item in sessions is a dict
+        self.session = {}
+        self.status_table = {}  # store the status of each table
 
-    # check if the table is exist.
-    def _init_check(self):
-        with sqlite3.connect(self.path) as db:
-            cur = db.cursor()
-            try:
-                cur.execute(f'select * from {self._id}')
-                cur.fetchall()
-            except sqlite3.OperationalError:
-                self._init_table(cur)
-                db.commit()
+    def load(self, table, db):
+        '''
+        get the content of table in database
+        '''
+        # cause that up_to_date is 0, so any val that is True IS NOT up_to_date
+        if table not in self.session or self.status_table.get(table):
+            self._load_table(table, db)
+        return self.session[table]
 
-    # be warn of that this func will NOT acquire for lock.
-    def _init_table(self, cur):
-        cur.execute(f'create table {self._id} (key text, value text)')
+    def _load_table(self, table, db):
+        '''
+        load data into session
+        '''
+        cur = db.cursor()
+        try:
+            # clean the old content
+            del self.session[table]
+            self.session[table] = {}
+            # select data from db
+            cur.execute(f'select * from {table}')
+            origin_date = cur.fetchall()
+            for key, value in origin_date:
+                self.session[table][key] = ast.literal_eval(value)
+        except sqlite3.OperationalError:
+            # once if there is not table
+            cur.execute(f'create table {table} (key text, value text)')
+            db.commit()
+        self.status_table[table] = up_to_date
 
     # loads config from database.
     # return a dict contains config.

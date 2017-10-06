@@ -3,13 +3,12 @@ import sys
 import sqlite3
 
 
-# status code list
-uninital = -1
-up_to_date = 0
-out_of_date = 1
-
-
 class database():
+    # status code list
+    uninital = -1
+    up_to_date = 0
+    out_of_date = 1
+
     def __init__(self):
         self.path = sys.path[0]+'/'+'laxect.database.tmp'
         # TODO need to update sessions tp auto-update in the future.
@@ -17,6 +16,7 @@ class database():
         # each item in sessions is a dict
         self.session = {}
         self.status_table = {}  # store the status of each table
+        # the action table
 
     def load(self, table, db):
         '''
@@ -35,6 +35,10 @@ class database():
         switch: use ast to switch or not
         '''
         cur = db.cursor()
+        # switch patch
+        # only config table need switch now
+        if table == 'config':
+            switch = True
         try:
             # clean the old content
             del self.session[table]
@@ -51,7 +55,10 @@ class database():
             # once if there is not table
             cur.execute(f'create table {table} (key text, value text)')
             db.commit()
-        self.status_table[table] = up_to_date
+        self.status_table[table] = database.up_to_date
+
+    def action(self, act, table, key, value=None):
+        pass  # TODO
 
     def new_session(self, key, value, table=None):
         '''

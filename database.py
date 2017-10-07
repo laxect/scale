@@ -17,83 +17,87 @@ class database():
         self.session = {}
         self.status_table = {}  # store the status of each table
         # the action table
+        # low level apis
+        self.action_table = {
+            'get': 'select * from {table} where key="{key}"',
+            'put': 'insert into {table} values("{key}", "{value}")',
+            'delete': 'delete from {table} where key="{key}"',
+            'update': 'update {table} set value="{value}" where key="{key}"',
+        }
 
-    def load(self, table, db):
-        '''
-        get the content of table in database
-        '''
-        # cause that up_to_date is 0, so any val that is True IS NOT up_to_date
-        if table not in self.session or self.status_table.get(table):
-            self._load_table(table, db)
-        return self.session[table]
-
-    def _load_table(self, table, db, switch=False):
+    def load(self, table, db, switch=False):
         '''
         load data into session
         table: str the name of table you want to load
         db: a sqlite3 db object
         switch: use ast to switch or not
         '''
-        cur = db.cursor()
-        # switch patch
-        # only config table need switch now
-        if table == 'config':
-            switch = True
-        try:
-            # clean the old content
-            del self.session[table]
-            self.session[table] = {}
-            # select data from db
-            cur.execute(f'select * from {table}')
-            origin_date = cur.fetchall()
-            for key, value in origin_date:
-                if switch:
-                    self.session[table][key] = ast.literal_eval(value)
-                else:
-                    self.session[table][key] = value
-        except sqlite3.OperationalError:
-            # once if there is not table
-            cur.execute(f'create table {table} (key text, value text)')
-            db.commit()
-        self.status_table[table] = database.up_to_date
+        # cause that up_to_date is 0, so any val that is True IS NOT up_to_date
+        # with no val link with key(table) dict.get will return None in defualt
+        if table not in self.session or self.status_table.get(table):
+            cur = db.cursor()
+            # switch patch
+            # only config table need switch now
+            if table == 'config':
+                switch = True
+            try:
+                # clean cache
+                self.session[table] = {}
+                # select data from db
+                cur.execute(f'select * from {table}')
+                for key, value in cur.fetchall():
+                    if switch:
+                        self.session[table][key] = ast.literal_eval(value)
+                    else:
+                        self.session[table][key] = value
+            except sqlite3.OperationalError:
+                # once if there is not table
+                cur.execute(f'create table {table} (key text, value text)')
+                db.commit()
+            self.status_table[table] = database.up_to_date
+        return self.session[table]
 
-    def action(self, act, table, key, value=None):
-        pass  # TODO
-
-    def new_session(self, key, value, table=None):
-        '''
-            add a new session to database.
-            Args :  key: Text, values: text
-            return : None
-        '''
-        table = table if table else self._id
-        sql = f'insert into {table} values("{key}", "{value}")'
-        with sqlite3.connect(self.path) as db:
+    def action(self, db, act, table, key, val=None):
+        if act in self.action_table:
+            sql = self.action_table[act].format(table=table, key=key, value=val)
             cur = db.cursor()
             cur.execute(sql)
-            db.commit()
+            return cur.fetchall()
 
-    def session_update(self, key, value, table=None):
-        'standard session update func. also the back-end of config_update.'
-        if not table:
-            table = self._id
-        sql = f'update {table} set value="{value}" where key="{key}"'
-        with sqlite3.connect(self.path) as db:
-            cur = db.cursor()
-            cur.execute(sql)
-            db.commit()
-
-    def session_seek(self, key, value=None, table=None):
-        # look for that this func will not use *value*
-        'standard session seek func.'
-        if table is None:
-            table = self._id
-        sql = f'select * from {table} where key="{key}"'
-        with sqlite3.connect(self.path) as db:
-            cur = db.cursor()
-            cur.execute(sql)
-            res = cur.fetchall()
-        return res
+    # def new_session(self, key, value, table=None):
+    #     '''
+    #         add a new session to database.
+    #         Args :  key: Text, values: text
+    #         return : None
+    #     '''
+    #     table = table if table else self._id
+    #     sql = f'insert into {table} values("{key}", "{value}")'
+    #     with sqlite3.connect(self.path) as db:
+    #         cur = db.cursor()
+    #         cur.execute(sql)
+    #         db.commit()
+    #
+    # def session_update(self, key, value, table=None):
+    #     'standard session update func. also the back-end of config_update.'
+    #     if not table:
+    #         table = self._id
+    #     sql = f'update {table} set value="{value}" where key="{key}"'
+    #     with sqlite3.connect(self.path) as db:
+    #         cur = db.cursor()
+    #         cur.execute(sql)
+    #         db.commit()
+    #
+    # def session_seek(self, key, value=None, table=None):
+    #     # look for that this func will not use *value*
+    #     'standard session seek func.'
+    #     if table is None:
+    #         table = self._id
+    #     sql = f'select * from {table} where key="{key}"'
+    #     with sqlite3.connect(self.path) as db:
+    #         cur = db.cursor()
+    #         cur.execute(sql)
+    #         res = cur.fetchall()
+    #     return res
 
     # TODO need to de re wrote
     def check_up_to_date(self, cid, content, table=None):

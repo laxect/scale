@@ -9,7 +9,10 @@ class database():
     up_to_date = 0
     out_of_date = 1
 
-    def __init__(self):
+    def __init__(self, inbox, mail_service):
+        # use inbox to recvive request and return res
+        self.inbox = inbox
+        self.mail_service = mail_service
         self.path = sys.path[0]+'/'+'laxect.database.tmp'
         # TODO need to update sessions tp auto-update in the future.
         # be ware of that the sessions will not update automately now.
@@ -62,70 +65,9 @@ class database():
             sql = self.action_table[act].format(table=table, key=key, value=val)
             cur = db.cursor()
             cur.execute(sql)
+            self.status_table[table] = database.out_of_date  # update the st tb
             return cur.fetchall()
 
-    # def new_session(self, key, value, table=None):
-    #     '''
-    #         add a new session to database.
-    #         Args :  key: Text, values: text
-    #         return : None
-    #     '''
-    #     table = table if table else self._id
-    #     sql = f'insert into {table} values("{key}", "{value}")'
-    #     with sqlite3.connect(self.path) as db:
-    #         cur = db.cursor()
-    #         cur.execute(sql)
-    #         db.commit()
-    #
-    # def session_update(self, key, value, table=None):
-    #     'standard session update func. also the back-end of config_update.'
-    #     if not table:
-    #         table = self._id
-    #     sql = f'update {table} set value="{value}" where key="{key}"'
-    #     with sqlite3.connect(self.path) as db:
-    #         cur = db.cursor()
-    #         cur.execute(sql)
-    #         db.commit()
-    #
-    # def session_seek(self, key, value=None, table=None):
-    #     # look for that this func will not use *value*
-    #     'standard session seek func.'
-    #     if table is None:
-    #         table = self._id
-    #     sql = f'select * from {table} where key="{key}"'
-    #     with sqlite3.connect(self.path) as db:
-    #         cur = db.cursor()
-    #         cur.execute(sql)
-    #         res = cur.fetchall()
-    #     return res
-
-    # TODO need to de re wrote
-    def check_up_to_date(self, cid, content, table=None):
-        table = table if table else self._id
-        check_result = False
-        with sqlite3.connect(self.path) as db:
-            cur = db.cursor()
-            cur.execute(f'select value from "{self._id}" where key="{cid}"')
-            res = cur.fetchall()
-            if res and res[0][0] == content:
-                check_result = False
-            elif res:
-                cur.execute(
-                    f'update {self._id} set value="{content}" where key="{cid}"'
-                )
-                check_result = True
-            else:
-                cur.execute(
-                    f'insert into {self._id} values("{cid}", "{content}")'
-                )
-                check_result = True
-            db.commit()
-        return check_result
-
-    def commit_handle(self, action, table=None, key=None, value=None):
-        '''
-        A common port for database usage
-        '''
-        table = table if table else self._id  # make sure that table isn't empty
-        if action in self.action_table:
-            return self.action_table[action](key=key, value=value, table=table)
+    def data_service(self):
+        while True:
+            mail = self.inbox.get()

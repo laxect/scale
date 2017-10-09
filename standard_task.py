@@ -78,11 +78,17 @@ class task():
                     self.scale_api_result.put(msg)
                 else:
                     self.mail_handle(msg)
+            else:
+                break
 
+    # BUG will *NOT* fix in next few generations
+    # look for: if your ask for more than one api in the same time,
+    # the result will not return in order
     def scale_core_apis(self, api, args=None):
         '''
         u should use this function to ask scale_apis
         need inbox to work proprely.
+        args should be a list.
         '''
         sa_add = ['scale_api', api]
         self.mail_service.put(self.gen_msg(args, fport='sca', send_to=sa_add))
@@ -90,6 +96,11 @@ class task():
 
     def run(self):
         def run_steps():
+            # if you want to do some thing, you should put your action in _run
+            if not self._run():
+                print('no run func assigned.')
+                print(self.id)
+                return
             while True:
                 self.status = 'run'
                 self._run()

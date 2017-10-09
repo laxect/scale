@@ -1,19 +1,21 @@
 import ast
 import sys
 import sqlite3
+import standard_task
 
 
-class database():
+class database(standard_task.task):
     # status code list
     uninital = -1
     up_to_date = 0
     out_of_date = 1
 
-    def __init__(self, inbox, mail_service):
+    def __init__(self, mail_service, hooks=None):
+        super().__init__(mail_service, hooks)
         # use inbox to recvive request and return res
-        self.inbox = inbox
-        self.mail_service = mail_service
-        self.path = sys.path[0]+'/'+'laxect.database.tmp'
+        self.id = 'laxect.database'
+        self.inbox_tag = [self.id, 'scale_api_db']
+        self.path = sys.path[0]+'/'+self.id+'.tmp'
         # TODO need to update sessions tp auto-update in the future.
         # be ware of that the sessions will not update automately now.
         # each item in sessions is a dict
@@ -68,6 +70,25 @@ class database():
             self.status_table[table] = database.out_of_date  # update the st tb
             return cur.fetchall()
 
-    def data_service(self):
-        while True:
-            mail = self.inbox.get()
+    def mail_handle(self, mail):
+        origin = [mail['from'], mail['from_port']]
+        # storage sandbox for task
+        # you *CAN NOT* write things to other task's storage.
+        table = mail['from']
+        action, key, *value = mail['content']
+        # value is a list. unpack it.
+        if value is not []:
+            value = value[0]
+        else:
+            value = None
+        with sqlite3.connect(self.path) as db:
+            if action in self.action_table:
+                res = self.action(db, action, table, key, value)
+            elif action is 'CU':  # check if update
+                res = [item[0] for item in self.action(db, 'get', table, key)]
+                if value in res:
+                    res = True
+                else:
+                    res = False
+                    self.action(db, 'update', table, key)
+        self.mail_service(self.gen_msg(res, fport='sca', send_to=origin))

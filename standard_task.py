@@ -11,10 +11,11 @@ class task():
     message that doesn't point a specify inbox.
     '''
     def __init__(self, mail_service, hooks=None):
-        self.id = None
+        self.id = None  # your must rewrite id
         self.send_to = 'inbox'
         self.mail_service = mail_service
-        self.inbox_tag = [self.id]  # design for task need inbox
+        # to make your task work fine, you must add something to inbox_tag
+        self.inbox_tag = []  # design for task need inbox
         self.hooks = hooks  # the hooks system.
         # if u want to use page_get u must set this to True.
         self.page_get_switch = False
@@ -78,6 +79,7 @@ class task():
                     self.scale_api_result.put(msg)
                 else:
                     self.mail_handle(msg)
+            # use None as EOF
             else:
                 break
 
@@ -90,9 +92,11 @@ class task():
         need inbox to work proprely.
         args should be a list.
         '''
-        sa_add = ['scale_api', api]
+        sa_add = ['scale_api_'+api, ]
         self.mail_service.put(self.gen_msg(args, fport='sca', send_to=sa_add))
-        return self.scale_api_result.get()
+        res = self.scale_api_result.get()
+        if res:
+            return res['msg']
 
     def run(self):
         def run_steps():
